@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/shortcut_icon_1"
+        android:shortcutId="shortcut_icon_1"
+        android:shortcutLongLabel="@string/shortcut_one_long_label"
+        android:shortcutShortLabel="@string/shortcut_one_short_label">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetClass="com.example.garbage.MainActivity"
+            android:targetPackage="com.example.garbage" />
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.example.garbage.ShortcutOneActivity"
+            android:targetPackage="com.example.garbage" />
+    </shortcut>
+</shortcuts>

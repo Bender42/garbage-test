@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">Garbage</string>
+
+    <string name="activity_main_button">Переход к Shortcut One</string>
+    <string name="activity_main_change_rank_button">Изменение порядка</string>
+
+    <string name="shortcut_one_text">Shortcut One</string>
+    <string name="shortcut_one_long_label">Большое большое прям длинное описание</string>
+    <string name="shortcut_one_short_label">Короткое описание</string>
+
+    <string name="shortcut_three_activity">Shortcut Three</string>
+
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="add_customizable_widget">Add customizable widget</string>
+
+    <string name="red">Red</string>
+    <string name="green">Green</string>
+    <string name="blue">Blue</string>
+    <string name="title_activity_preferences">PreferencesActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+
+    <string name="bLoadPref">Load</string>
+    <string name="bSavePref">Save</string>
+    <string name="buttonGoPref">Go Preferences</string>
+    <string name="bGoBackPref">Go Back</string>
+</resources>
