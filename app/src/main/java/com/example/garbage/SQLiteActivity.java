@@ -14,8 +14,6 @@ import android.widget.TextView;
 
 public class SQLiteActivity extends AppCompatActivity {
 
-    //private String LOG_TAG = "SQLlog";
-
     private EditText editTextName;
     private EditText editTextCurrency;
 
@@ -68,7 +66,7 @@ public class SQLiteActivity extends AppCompatActivity {
                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                 contentValues.put("name", name);
                 contentValues.put("currency", currency);
-                Long id = database.insert(SQLiteHelper.WALLETS_TABLE_NAME, null, contentValues);
+                Long id = database.insert(SQLiteHelper.WALLET_TABLE_NAME, null, contentValues);
                 TextView textViewAdd = new TextView(v.getContext());
                 textViewAdd.setText(String.format("id inserted row = %s", id));
                 linearLayout.addView(textViewAdd);
@@ -82,7 +80,7 @@ public class SQLiteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SQLiteDatabase database = dbHelper.getWritableDatabase();
-                Cursor cursor = database.query(SQLiteHelper.WALLETS_TABLE_NAME, null, null, null, null, null, null);
+                Cursor cursor = database.query(SQLiteHelper.WALLET_TABLE_NAME, null, null, null, null, null, null);
                 if (cursor.moveToFirst()) {
                     int idIndex = cursor.getColumnIndex("id");
                     int nameIndex = cursor.getColumnIndex("name");
@@ -108,7 +106,7 @@ public class SQLiteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 SQLiteDatabase database = dbHelper.getWritableDatabase();
-                int countClear = database.delete(SQLiteHelper.WALLETS_TABLE_NAME, null, null);
+                int countClear = database.delete(SQLiteHelper.WALLET_TABLE_NAME, null, null);
                 TextView textViewClear = new TextView(v.getContext());
                 textViewClear.setText(String.format("deleted row count = %s", countClear));
                 linearLayout.addView(textViewClear);
@@ -132,7 +130,7 @@ public class SQLiteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String textId = editTextId.getText().toString();
                 SQLiteDatabase database = dbHelper.getWritableDatabase();
-                int countDelete = database.delete(SQLiteHelper.WALLETS_TABLE_NAME, "id = ?", new String[] { textId });
+                int countDelete = database.delete(SQLiteHelper.WALLET_TABLE_NAME, "id = ?", new String[] { textId });
                 TextView textViewDelete = new TextView(v.getContext());
                 textViewDelete.setText(String.format("deleted row count = %s, deleted id = %s", countDelete, textId));
                 linearLayout.addView(textViewDelete);
@@ -152,7 +150,7 @@ public class SQLiteActivity extends AppCompatActivity {
                 SQLiteDatabase database = dbHelper.getWritableDatabase();
                 contentValues.put("name", nameId);
                 contentValues.put("currency", currencyId);
-                int idUpdate = database.update(SQLiteHelper.WALLETS_TABLE_NAME, contentValues, "id = ?", new String[] { textId });
+                int idUpdate = database.update(SQLiteHelper.WALLET_TABLE_NAME, contentValues, "id = ?", new String[] { textId });
                 TextView textViewUpdate = new TextView(v.getContext());
                 textViewUpdate.setText(String.format("updated row count = %s, updated id = %s", idUpdate, textId));
                 linearLayout.addView(textViewUpdate);
