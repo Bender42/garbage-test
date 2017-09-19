@@ -12,7 +12,10 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
+import com.example.garbage.wallet.AddWalletActivity;
 
 import java.util.Arrays;
 
@@ -20,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView textViewGoPref;
     private Button buttonGoPref;
+    private ImageButton buttonAddWallet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button changeRankButton = (Button) findViewById(R.id.buttonChangeRank);
         changeRankButton.setOnClickListener(this);
 
+        createShortcuts();
+        initButtonAddWallet();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buttonShortcutOne:
+                Intent intentShortcut = new Intent(this, ShortcutOneActivity.class);
+                startActivity(intentShortcut);
+                break;
+            case R.id.buttonChangeRank:
+                ShortcutInfo webShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_two_web")
+                        .setRank(1)
+                        .build();
+                ShortcutInfo threeShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_three")
+                        .setRank(0)
+                        .build();
+                ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+                shortcutManager.updateShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo));
+                break;
+            case R.id.buttonGoPref:
+                Intent intentPref = new Intent(this, PreferencesActivity.class);
+                startActivityForResult(intentPref, 1);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {
+            return;
+        }
+        if (1 == requestCode) {
+            String name = data.getStringExtra("name");
+            textViewGoPref.setText("Data from preferences: " + name);
+        }
+    }
+
+    private void createShortcuts() {
         ForegroundColorSpan colorSpan = new ForegroundColorSpan(getResources().getColor(android.R.color.holo_blue_light, getTheme()));
         String label = "Динамический web";
         SpannableStringBuilder colouredLabel = new SpannableStringBuilder(label);
@@ -69,38 +115,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         shortcutManager.setDynamicShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo, sqlShortcutInfo));
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.buttonShortcutOne:
-                Intent intentShortcut = new Intent(this, ShortcutOneActivity.class);
-                startActivity(intentShortcut);
-                break;
-            case R.id.buttonChangeRank:
-                ShortcutInfo webShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_two_web")
-                        .setRank(1)
-                        .build();
-                ShortcutInfo threeShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_three")
-                        .setRank(0)
-                        .build();
-                ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-                shortcutManager.updateShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo));
-                break;
-            case R.id.buttonGoPref:
-                Intent intentPref = new Intent(this, PreferencesActivity.class);
-                startActivityForResult(intentPref, 1);
-                break;
-            default:
-                break;
-        }
+    private void initButtonAddWallet() {
+        buttonAddWallet = (ImageButton) findViewById(R.id.button_add_wallet);
+        buttonAddWallet.setOnClickListener(getAddWalletListener());
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            return;
-        }
-        String name = data.getStringExtra("name");
-        textViewGoPref.setText("Data from preferences: " + name);
+    public View.OnClickListener getAddWalletListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentPref = new Intent(v.getContext(), AddWalletActivity.class);
+                startActivityForResult(intentPref, 2);
+            }
+        };
     }
 }

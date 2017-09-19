@@ -10,20 +10,32 @@
 
     <string name="shortcut_three_activity">Shortcut Three</string>
 
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="add_widget">Add widget</string>
-    <string name="add_customizable_widget">Add customizable widget</string>
+    <string name="appwidget_text">ПРИМЕР</string>
+    <string name="add_widget">Добавить виджет</string>
+    <string name="add_customizable_widget">Добавить костамизируемый виджет</string>
 
-    <string name="red">Red</string>
-    <string name="green">Green</string>
-    <string name="blue">Blue</string>
+    <string name="red">Красный</string>
+    <string name="green">Зеленый</string>
+    <string name="blue">Синий</string>
     <string name="title_activity_preferences">PreferencesActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
-    <string name="bLoadPref">Load</string>
-    <string name="bSavePref">Save</string>
+    <string name="bLoadPref">Загрузить</string>
+    <string name="bSavePref">Сохранить</string>
     <string name="buttonGoPref">Go Preferences</string>
-    <string name="bGoBackPref">Go Back</string>
+    <string name="bGoBackPref">Назад</string>
+
+    <string name="RUR">Рубль</string>
+    <string name="USD">Доллар</string>
+    <string name="EUR">Евро</string>
+
+    <string name="wallet_name">Имя кошелька</string>
+    <string name="wallet_amount">Баланс кошелька</string>
+    <string-array name="currency">
+        <item>RUR</item>
+        <item>USD</item>
+        <item>EUR</item>
+    </string-array>
 </resources>
