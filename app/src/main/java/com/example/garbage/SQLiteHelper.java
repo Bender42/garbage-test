@@ -4,9 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.garbage.wallet.Wallet;
+
 public class SQLiteHelper extends SQLiteOpenHelper {
 
-    public static String WALLET_TABLE_NAME = "wallet";
     public static String COST_ITEM_TABLE_NAME = "cost_item";
     public static String EXPENDITURE_TABLE_NAME = "expenditure";
     public static String WALLET_OPERATION_TABLE_NAME = "wallet_operation";
@@ -22,14 +23,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "name varchar(255), " +
                 "icon integer, " +
                 "currency varchar(10)," +
-                "amount decimal(10,2));", WALLET_TABLE_NAME));
+                "amount integer);", Wallet.WALLET_TABLE_NAME));
         db.execSQL(String.format("create table %s (" +
                 "id integer primary key autoincrement, " +
                 "name varchar(255), " +
                 "expenditure integer, " +
                 "time datetime, " +
                 "currency varchar(10)," +
-                "amount decimal(10,2));", COST_ITEM_TABLE_NAME));
+                "amount integer);", COST_ITEM_TABLE_NAME));
         db.execSQL(String.format("create table %s (" +
                 "id integer primary key autoincrement, " +
                 "name varchar(255), " +
@@ -38,7 +39,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 "id integer primary key autoincrement, " +
                 "wallet integer, " +
                 "from_wallet integer," +
-                "amount decimal(10,2)," +
+                "amount integer," +
                 "description varchar(255));", WALLET_OPERATION_TABLE_NAME));
     }
 

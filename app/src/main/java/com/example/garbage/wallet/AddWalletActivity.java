@@ -1,5 +1,6 @@
 package com.example.garbage.wallet;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,8 +13,6 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import com.example.garbage.R;
-
-import java.math.BigDecimal;
 
 public class AddWalletActivity extends AppCompatActivity {
 
@@ -31,19 +30,23 @@ public class AddWalletActivity extends AppCompatActivity {
         editTextWalletAmount = (EditText) findViewById(R.id.edit_text_wallet_amount);
 
         imageButtonAdd = (ImageButton) findViewById(R.id.image_button_add);
-        imageButtonAdd.setOnClickListener(getAddOnClickListener());
+        imageButtonAdd.setOnClickListener(getAddOnClickListener(this));
 
         initSpinnerCurrency();
     }
 
-    private View.OnClickListener getAddOnClickListener() {
+    private View.OnClickListener getAddOnClickListener(final Context context) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 wallet.setName(editTextWalletName.getText().toString());
-                wallet.setAmount(new BigDecimal(editTextWalletAmount.getText().toString()));
-                setResult(RESULT_OK, new Intent());
-                finish();
+                wallet.setAmount(editTextWalletAmount.getText().toString());
+                if (wallet.isComplete()) {
+                    if (wallet.post(context)) {
+                        setResult(RESULT_OK, new Intent());
+                        finish();
+                    }
+                }
             }
         };
     }
