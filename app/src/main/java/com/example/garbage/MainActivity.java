@@ -7,16 +7,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.Wallet;
@@ -25,13 +29,10 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static int ADD_WALLET_ACTIVITY_CODE = 2;
-
-    private TextView textViewGoPref;
-    private Button buttonGoPref;
-    private ImageButton buttonAddWallet;
+    public static int SQL_ACTIVITY_CODE = 3;
 
     private LinearLayout layoutWallets;
 
@@ -43,46 +44,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         dbHelper = new SQLiteHelper(this);
 
-        textViewGoPref = (TextView) findViewById(R.id.textViewGoPref);
-        buttonGoPref = (Button) findViewById(R.id.buttonGoPref);
-        buttonGoPref.setOnClickListener(this);
-
-        Button toShortcutOneButton = (Button) findViewById(R.id.buttonShortcutOne);
-        toShortcutOneButton.setOnClickListener(this);
-        Button changeRankButton = (Button) findViewById(R.id.buttonChangeRank);
-        changeRankButton.setOnClickListener(this);
-
         createShortcuts();
-
+        initNavigation();
         initLayoutWallets();
         refreshWallets();
         initButtonAddWallet();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.buttonShortcutOne:
-                Intent intentShortcut = new Intent(this, ShortcutOneActivity.class);
-                startActivity(intentShortcut);
-                break;
-            case R.id.buttonChangeRank:
-                ShortcutInfo webShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_two_web")
-                        .setRank(1)
-                        .build();
-                ShortcutInfo threeShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_three")
-                        .setRank(0)
-                        .build();
-                ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-                shortcutManager.updateShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo));
-                break;
-            case R.id.buttonGoPref:
-                Intent intentPref = new Intent(this, PreferencesActivity.class);
-                startActivityForResult(intentPref, 1);
-                break;
-            default:
-                break;
-        }
     }
 
     @Override
@@ -90,10 +56,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (data == null) {
             return;
         }
-        if (1 == requestCode && RESULT_OK == resultCode) {
-            String name = data.getStringExtra("name");
-            textViewGoPref.setText("Data from preferences: " + name);
-        } else if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+        if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            refreshWallets();
+        }
+        if (SQL_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
             refreshWallets();
         }
     }
@@ -137,17 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, ShortcutThreeActivity.class)})
                 .build();
 
-        ShortcutInfo sqlShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_sql")
-                .setShortLabel("SQL")
-                .setLongLabel("Открываем SQL")
-                .setIcon(Icon.createWithResource(this, R.drawable.shortcut_icon_sql))
-                .setIntents(new Intent[]{
-                        new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK),
-                        new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, SQLiteActivity.class)})
-                .build();
-
         ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-        shortcutManager.setDynamicShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo, sqlShortcutInfo));
+        shortcutManager.setDynamicShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo));
     }
 
     private void initLayoutWallets() {
@@ -155,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initButtonAddWallet() {
-        buttonAddWallet = (ImageButton) findViewById(R.id.image_button_add_wallet);
+        ImageButton buttonAddWallet = (ImageButton) findViewById(R.id.image_button_add_wallet);
         buttonAddWallet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,5 +120,57 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivityForResult(intentPref, ADD_WALLET_ACTIVITY_CODE);
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.nav_shortcut_one) {
+            Intent intentShortcut = new Intent(this, ShortcutOneActivity.class);
+            startActivity(intentShortcut);
+        } else if (id == R.id.nav_preferences) {
+            Intent intentPref = new Intent(this, PreferencesActivity.class);
+            startActivityForResult(intentPref, 1);
+        } else if (id == R.id.change_shortcut_rank) {
+            ShortcutInfo webShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_two_web")
+                    .setRank(1)
+                    .build();
+            ShortcutInfo threeShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_three")
+                    .setRank(0)
+                    .build();
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            shortcutManager.updateShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo));
+        } else if (id == R.id.nav_sql) {
+            Intent intentPref = new Intent(this, SQLiteActivity.class);
+            startActivityForResult(intentPref, SQL_ACTIVITY_CODE);
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+    private void initNavigation() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 }
