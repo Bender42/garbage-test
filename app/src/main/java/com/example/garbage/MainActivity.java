@@ -22,6 +22,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
+import com.example.garbage.expenditure.AddExpenditureActivity;
+import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.Wallet;
 
@@ -31,10 +33,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static int SQL_ACTIVITY_CODE = 1;
+
     public static int ADD_WALLET_ACTIVITY_CODE = 2;
-    public static int SQL_ACTIVITY_CODE = 3;
+    public static int ADD_EXPENDITURE_ACTIVITY_CODE = 3;
 
     private LinearLayout layoutWallets;
+    private LinearLayout layoutExpenditures;
 
     private SQLiteHelper dbHelper;
 
@@ -46,9 +51,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         createShortcuts();
         initNavigation();
+
         initLayoutWallets();
-        refreshWallets();
         initButtonAddWallet();
+
+        initLayoutExpenditures();
+        initButtonAddExpenditure();
+
+        refreshWallets();
+        refreshExpenditures();
     }
 
     @Override
@@ -59,67 +70,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
             refreshWallets();
         }
+        if (ADD_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            refreshExpenditures();
+        }
         if (SQL_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
             refreshWallets();
         }
-    }
-
-    private void refreshWallets() {
-        List<Wallet> wallets = new LinkedList<>();
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Cursor cursor = database.query(Wallet.WALLET_TABLE_NAME, null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                wallets.add(new Wallet(cursor));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        dbHelper.close();
-        layoutWallets.removeAllViews();
-        for (Wallet wallet : wallets) {
-            wallet.draw(layoutWallets, this);
-        }
-    }
-
-    private void createShortcuts() {
-        ForegroundColorSpan colorSpan = new ForegroundColorSpan(getResources().getColor(android.R.color.holo_blue_light, getTheme()));
-        String label = "Динамический web";
-        SpannableStringBuilder colouredLabel = new SpannableStringBuilder(label);
-        colouredLabel.setSpan(colorSpan, 0, label.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-
-        ShortcutInfo webShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_two_web")
-                .setShortLabel(colouredLabel)
-                .setLongLabel("Открываем сайт google.com")
-                .setIcon(Icon.createWithResource(this, R.drawable.shortcut_icon_2))
-                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com")))
-                .build();
-
-        ShortcutInfo threeShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_three")
-                .setShortLabel("Динамический")
-                .setLongLabel("Открываем динамически")
-                .setIcon(Icon.createWithResource(this, R.drawable.shortcut_icon_3))
-                .setIntents(new Intent[]{
-                        new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK),
-                        new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, ShortcutThreeActivity.class)})
-                .build();
-
-        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-        shortcutManager.setDynamicShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo));
-    }
-
-    private void initLayoutWallets() {
-        layoutWallets = (LinearLayout) findViewById(R.id.layout_wallets);
-    }
-
-    private void initButtonAddWallet() {
-        ImageButton buttonAddWallet = (ImageButton) findViewById(R.id.image_button_add_wallet);
-        buttonAddWallet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intentPref = new Intent(v.getContext(), AddWalletActivity.class);
-                startActivityForResult(intentPref, ADD_WALLET_ACTIVITY_CODE);
-            }
-        });
     }
 
     @Override
@@ -160,6 +116,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    private void createShortcuts() {
+        ForegroundColorSpan colorSpan = new ForegroundColorSpan(getResources().getColor(android.R.color.holo_blue_light, getTheme()));
+        String label = "Динамический web";
+        SpannableStringBuilder colouredLabel = new SpannableStringBuilder(label);
+        colouredLabel.setSpan(colorSpan, 0, label.length(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+
+        ShortcutInfo webShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_two_web")
+                .setShortLabel(colouredLabel)
+                .setLongLabel("Открываем сайт google.com")
+                .setIcon(Icon.createWithResource(this, R.drawable.shortcut_icon_2))
+                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://google.com")))
+                .build();
+
+        ShortcutInfo threeShortcutInfo = new ShortcutInfo.Builder(this, "shortcut_three")
+                .setShortLabel("Динамический")
+                .setLongLabel("Открываем динамически")
+                .setIcon(Icon.createWithResource(this, R.drawable.shortcut_icon_3))
+                .setIntents(new Intent[]{
+                        new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK),
+                        new Intent(Intent.ACTION_MAIN, Uri.EMPTY, this, ShortcutThreeActivity.class)})
+                .build();
+
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+        shortcutManager.setDynamicShortcuts(Arrays.asList(webShortcutInfo, threeShortcutInfo));
+    }
+
     private void initNavigation() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -172,5 +154,69 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void initLayoutWallets() {
+        layoutWallets = (LinearLayout) findViewById(R.id.layout_wallets);
+    }
+
+    private void initButtonAddWallet() {
+        ImageButton buttonAddWallet = (ImageButton) findViewById(R.id.image_button_add_wallet);
+        buttonAddWallet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentPref = new Intent(v.getContext(), AddWalletActivity.class);
+                startActivityForResult(intentPref, ADD_WALLET_ACTIVITY_CODE);
+            }
+        });
+    }
+
+    private void refreshWallets() {
+        List<Wallet> wallets = new LinkedList<>();
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(Wallet.WALLET_TABLE_NAME, null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                wallets.add(new Wallet(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        dbHelper.close();
+        layoutWallets.removeAllViews();
+        for (Wallet wallet : wallets) {
+            wallet.draw(layoutWallets, this);
+        }
+    }
+
+    private void initLayoutExpenditures() {
+        layoutExpenditures = (LinearLayout) findViewById(R.id.layout_expenditures);
+    }
+
+    private void initButtonAddExpenditure() {
+        ImageButton buttonAddExpenditure = (ImageButton) findViewById(R.id.image_button_add_expenditure);
+        buttonAddExpenditure.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentPref = new Intent(v.getContext(), AddExpenditureActivity.class);
+                startActivityForResult(intentPref, ADD_EXPENDITURE_ACTIVITY_CODE);
+            }
+        });
+    }
+
+    private void refreshExpenditures() {
+        List<Expenditure> Expenditures = new LinkedList<>();
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Expenditures.add(new Expenditure(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        dbHelper.close();
+        layoutExpenditures.removeAllViews();
+        for (Expenditure expenditure : Expenditures) {
+            expenditure.draw(layoutExpenditures, this);
+        }
     }
 }

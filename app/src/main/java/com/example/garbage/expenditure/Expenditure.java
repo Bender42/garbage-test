@@ -1,4 +1,4 @@
-package com.example.garbage.wallet;
+package com.example.garbage.expenditure;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,43 +12,31 @@ import android.widget.TextView;
 import com.example.garbage.SQLiteHelper;
 import com.example.garbage.tools.GarbageTools;
 
-import java.math.BigDecimal;
+public class Expenditure {
 
-public class Wallet {
-
-    public static String WALLET_TABLE_NAME = "wallet";
+    public static String EXPENDITURE_TABLE_NAME = "expenditure";
     private static String ID_COLUMN_NAME = "id";
     private static String NAME_COLUMN_NAME = "name";
-    private static String AMOUNT_COLUMN_NAME = "amount";
-    private static String CURRENCY_COLUMN_NAME = "currency";
     private static String ICON_COLUMN_NAME = "icon";
 
     private Integer id;
     private String name;
-    private BigDecimal amount;
-    private String currency;
     private Integer icon;
 
-    public Wallet() {
+    public Expenditure() {
     }
 
-    public Wallet(Cursor cursor) {
+    public Expenditure(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
         int idName = cursor.getColumnIndex(NAME_COLUMN_NAME);
-        int idAmount = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
-        int idCurrency = cursor.getColumnIndex(CURRENCY_COLUMN_NAME);
         int idIcon = cursor.getColumnIndex(ICON_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(idName);
-        this.amount = new BigDecimal(cursor.getInt(idAmount)).divide(new BigDecimal(100)).setScale(2);
-        this.currency = cursor.getString(idCurrency);
         this.icon = cursor.getInt(idIcon);
     }
 
     public boolean isComplete() {
-        return name != null && name.length() > 0 &&
-                amount != null && BigDecimal.ZERO.compareTo(amount) != 1 &&
-                currency != null && currency.length() > 0;
+        return name != null && name.length() > 0;
     }
 
     public boolean post(Context context) {
@@ -57,9 +45,7 @@ public class Wallet {
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COLUMN_NAME, name);
         contentValues.put(ICON_COLUMN_NAME, icon);
-        contentValues.put(CURRENCY_COLUMN_NAME, currency);
-        contentValues.put(AMOUNT_COLUMN_NAME, amount.multiply(new BigDecimal(100)).intValue());
-        database.insert(WALLET_TABLE_NAME, null, contentValues);
+        database.insert(EXPENDITURE_TABLE_NAME, null, contentValues);
         dbHelper.close();
         return true;
     }
@@ -100,26 +86,6 @@ public class Wallet {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public void setAmount(String amount) {
-        this.amount = amount != null && amount.length() != 0 ? new BigDecimal(amount) : null;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
     }
 
     public Integer getIcon() {

@@ -4,12 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static String COST_ITEM_TABLE_NAME = "cost_item";
-    public static String EXPENDITURE_TABLE_NAME = "expenditure";
     public static String WALLET_OPERATION_TABLE_NAME = "wallet_operation";
 
     public SQLiteHelper(Context context) {
@@ -34,7 +34,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(String.format("create table %s (" +
                 "id integer primary key autoincrement, " +
                 "name varchar(255), " +
-                "icon integer);", EXPENDITURE_TABLE_NAME));
+                "icon integer);", Expenditure.EXPENDITURE_TABLE_NAME));
         db.execSQL(String.format("create table %s (" +
                 "id integer primary key autoincrement, " +
                 "wallet integer, " +

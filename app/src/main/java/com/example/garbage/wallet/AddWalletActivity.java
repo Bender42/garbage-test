@@ -20,7 +20,6 @@ public class AddWalletActivity extends AppCompatActivity {
 
     private EditText editTextWalletName;
     private EditText editTextWalletAmount;
-    private ImageButton imageButtonAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +28,8 @@ public class AddWalletActivity extends AppCompatActivity {
         editTextWalletName = (EditText) findViewById(R.id.edit_text_wallet_name);
         editTextWalletAmount = (EditText) findViewById(R.id.edit_text_wallet_amount);
 
-        imageButtonAdd = (ImageButton) findViewById(R.id.image_button_add);
-        imageButtonAdd.setOnClickListener(getAddOnClickListener(this));
+        ImageButton imageButtonPostWallet = (ImageButton) findViewById(R.id.image_button_post_wallet);
+        imageButtonPostWallet.setOnClickListener(getAddOnClickListener(this));
 
         initSpinnerCurrency();
     }
