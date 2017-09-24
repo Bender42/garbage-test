@@ -21,9 +21,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.garbage.expenditure.AddExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
+import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.Wallet;
 
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int ADD_EXPENDITURE_ACTIVITY_CODE = 3;
 
     private LinearLayout layoutWallets;
-    private LinearLayout layoutExpenditures;
+    private LinearLayout scrollLayoutExpenditures;
 
     private SQLiteHelper dbHelper;
 
@@ -189,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initLayoutExpenditures() {
-        layoutExpenditures = (LinearLayout) findViewById(R.id.layout_expenditures);
+        scrollLayoutExpenditures = (LinearLayout) findViewById(R.id.scroll_linear_layout_expenditures);
     }
 
     private void initButtonAddExpenditure() {
@@ -204,19 +206,73 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void refreshExpenditures() {
-        List<Expenditure> Expenditures = new LinkedList<>();
+        List<Expenditure> expenditures = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
             do {
-                Expenditures.add(new Expenditure(cursor));
+                expenditures.add(new Expenditure(cursor));
             } while (cursor.moveToNext());
         }
         cursor.close();
         dbHelper.close();
-        layoutExpenditures.removeAllViews();
-        for (Expenditure expenditure : Expenditures) {
-            expenditure.draw(layoutExpenditures, this);
+
+        scrollLayoutExpenditures.removeAllViews();
+        LinearLayout linearLayout = getNewLinearLayoutExpenditure();
+        scrollLayoutExpenditures.addView(linearLayout);
+        int index = 0;
+        for (Expenditure expenditure : expenditures) {
+            if (index%5 == 0) {
+                linearLayout = getNewLinearLayoutExpenditure();
+                scrollLayoutExpenditures.addView(linearLayout);
+            }
+            LinearLayout linearLayoutItem = new LinearLayout(this);
+            linearLayoutItem.setOrientation(LinearLayout.VERTICAL);
+            linearLayoutItem.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT));
+
+            ImageButton buttonNewButton = new ImageButton(this);
+            buttonNewButton.setId(expenditure.getId());
+            buttonNewButton.setImageDrawable(this.getResources().getDrawable(android.R.drawable.ic_menu_add, this.getTheme()));
+            buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(80, this));
+            buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(80, this));
+            linearLayoutItem.addView(buttonNewButton);
+
+            TextView textView = new TextView(this);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT));
+            textView.setText(expenditure.getName());
+            textView.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
+            linearLayoutItem.addView(textView);
+            linearLayout.addView(linearLayoutItem);
+            index++;
         }
+        ImageButton buttonNewButton = new ImageButton(this);
+        buttonNewButton.setImageDrawable(this.getResources().getDrawable(android.R.drawable.ic_menu_add, this.getTheme()));
+        buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(80, this));
+        buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(80, this));
+        buttonNewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentPref = new Intent(v.getContext(), AddExpenditureActivity.class);
+                startActivityForResult(intentPref, ADD_EXPENDITURE_ACTIVITY_CODE);
+            }
+        });
+        if (index%5 == 0) {
+            linearLayout = getNewLinearLayoutExpenditure();
+            scrollLayoutExpenditures.addView(linearLayout);
+        }
+        linearLayout.addView(buttonNewButton);
+    }
+
+    private LinearLayout getNewLinearLayoutExpenditure() {
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setOrientation(LinearLayout.HORIZONTAL);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT));
+        return linearLayout;
     }
 }
