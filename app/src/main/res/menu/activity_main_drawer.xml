@@ -4,19 +4,19 @@
     <group android:checkableBehavior="none">
         <item
             android:id="@+id/nav_shortcut_one"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@android:drawable/ic_menu_send"
             android:title="Переход к Shortcut One" />
         <item
             android:id="@+id/nav_preferences"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@android:drawable/ic_menu_send"
             android:title="Переход к Preferences" />
         <item
             android:id="@+id/nav_sql"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@android:drawable/ic_menu_edit"
             android:title="Переход к SQL " />
         <item
             android:id="@+id/change_shortcut_rank"
-            android:icon="@drawable/ic_menu_send"
+            android:icon="@android:drawable/ic_menu_sort_by_size"
             android:title="Изменить порядок Shortcuts" />
     </group>
 

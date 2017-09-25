@@ -21,12 +21,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.garbage.expenditure.AddExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.AddWalletActivity;
+import com.example.garbage.wallet.EditWalletActivity;
 import com.example.garbage.wallet.Wallet;
 
 import java.util.Arrays;
@@ -36,49 +36,19 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static int SQL_ACTIVITY_CODE = 1;
-
     public static int ADD_WALLET_ACTIVITY_CODE = 2;
-    public static int ADD_EXPENDITURE_ACTIVITY_CODE = 3;
+    public static int EDIT_WALLET_ACTIVITY_CODE = 3;
+    public static int ADD_EXPENDITURE_ACTIVITY_CODE = 4;
+
+    public static int EXPENDITURE_COLUMN_COUNT = 5;
+
+    private List<Wallet> wallets = new LinkedList<>();
+    private List<Expenditure> expenditures = new LinkedList<>();
 
     private LinearLayout layoutWallets;
-    private LinearLayout scrollLayoutExpenditures;
+    private LinearLayout layoutExpenditures;
 
     private SQLiteHelper dbHelper;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        dbHelper = new SQLiteHelper(this);
-
-        createShortcuts();
-        initNavigation();
-
-        initLayoutWallets();
-        initButtonAddWallet();
-
-        initLayoutExpenditures();
-        initButtonAddExpenditure();
-
-        refreshWallets();
-        refreshExpenditures();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            return;
-        }
-        if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            refreshWallets();
-        }
-        if (ADD_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            refreshExpenditures();
-        }
-        if (SQL_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            refreshWallets();
-        }
-    }
 
     @Override
     public void onBackPressed() {
@@ -116,6 +86,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        dbHelper = new SQLiteHelper(this);
+
+        wallets = getWallets();
+        expenditures = getExpenditures();
+
+        createShortcuts();
+        initNavigation();
+
+        layoutWallets = (LinearLayout) findViewById(R.id.layout_wallets);
+        initAddWalletButton();
+
+        layoutExpenditures = (LinearLayout) findViewById(R.id.scroll_linear_layout_expenditures);
+
+        redrawWallets();
+        redrawExpenditures();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {
+            return;
+        }
+        if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            wallets = getWallets();
+            redrawWallets();
+        }
+        if (EDIT_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            wallets = getWallets();
+            redrawWallets();
+        }
+        if (ADD_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            expenditures = getExpenditures();
+            redrawExpenditures();
+        }
+        if (SQL_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            wallets = getWallets();
+            redrawWallets();
+        }
     }
 
     private void createShortcuts() {
@@ -158,11 +172,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    private void initLayoutWallets() {
-        layoutWallets = (LinearLayout) findViewById(R.id.layout_wallets);
-    }
-
-    private void initButtonAddWallet() {
+    private void initAddWalletButton() {
         ImageButton buttonAddWallet = (ImageButton) findViewById(R.id.image_button_add_wallet);
         buttonAddWallet.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private void refreshWallets() {
+    private List<Wallet> getWallets() {
         List<Wallet> wallets = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(Wallet.WALLET_TABLE_NAME, null, null, null, null, null, null);
@@ -184,28 +194,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         cursor.close();
         dbHelper.close();
+        return wallets;
+    }
+
+    private void redrawWallets() {
         layoutWallets.removeAllViews();
         for (Wallet wallet : wallets) {
-            wallet.draw(layoutWallets, this);
+            ImageButton walletButton = wallet.draw(layoutWallets, this);
+            walletButton.setOnLongClickListener(getOnLongClickListener(wallet.getId()));
         }
     }
 
-    private void initLayoutExpenditures() {
-        scrollLayoutExpenditures = (LinearLayout) findViewById(R.id.scroll_linear_layout_expenditures);
-    }
-
-    private void initButtonAddExpenditure() {
-        ImageButton buttonAddExpenditure = (ImageButton) findViewById(R.id.image_button_add_expenditure);
-        buttonAddExpenditure.setOnClickListener(new View.OnClickListener() {
+    private View.OnLongClickListener getOnLongClickListener(final Integer id) {
+        return new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intentPref = new Intent(v.getContext(), AddExpenditureActivity.class);
-                startActivityForResult(intentPref, ADD_EXPENDITURE_ACTIVITY_CODE);
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(v.getContext(), EditWalletActivity.class);
+                intent.putExtra("walletId", id);
+                startActivityForResult(intent, EDIT_WALLET_ACTIVITY_CODE);
+                return true;
             }
-        });
+        };
     }
 
-    private void refreshExpenditures() {
+    private List<Expenditure> getExpenditures() {
         List<Expenditure> expenditures = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
@@ -216,39 +228,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         cursor.close();
         dbHelper.close();
+        return expenditures;
+    }
 
-        scrollLayoutExpenditures.removeAllViews();
+    private void redrawExpenditures() {
+        layoutExpenditures.removeAllViews();
         LinearLayout linearLayout = getNewLinearLayoutExpenditure();
-        scrollLayoutExpenditures.addView(linearLayout);
+        layoutExpenditures.addView(linearLayout);
         int index = 0;
         for (Expenditure expenditure : expenditures) {
-            if (index%5 == 0) {
+            if (index % EXPENDITURE_COLUMN_COUNT == 0) {
                 linearLayout = getNewLinearLayoutExpenditure();
-                scrollLayoutExpenditures.addView(linearLayout);
+                layoutExpenditures.addView(linearLayout);
             }
-            LinearLayout linearLayoutItem = new LinearLayout(this);
-            linearLayoutItem.setOrientation(LinearLayout.VERTICAL);
-            linearLayoutItem.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-
-            ImageButton buttonNewButton = new ImageButton(this);
-            buttonNewButton.setId(expenditure.getId());
-            buttonNewButton.setImageDrawable(this.getResources().getDrawable(android.R.drawable.ic_menu_add, this.getTheme()));
-            buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(80, this));
-            buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(80, this));
-            linearLayoutItem.addView(buttonNewButton);
-
-            TextView textView = new TextView(this);
-            textView.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT));
-            textView.setText(expenditure.getName());
-            textView.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
-            linearLayoutItem.addView(textView);
-            linearLayout.addView(linearLayoutItem);
+            expenditure.draw(linearLayout, this);
             index++;
         }
+        drawAddExpenditureButton(linearLayout, index);
+    }
+
+    private void drawAddExpenditureButton(LinearLayout linearLayout, final int index) {
         ImageButton buttonNewButton = new ImageButton(this);
         buttonNewButton.setImageDrawable(this.getResources().getDrawable(android.R.drawable.ic_menu_add, this.getTheme()));
         buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(80, this));
@@ -256,13 +255,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonNewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentPref = new Intent(v.getContext(), AddExpenditureActivity.class);
-                startActivityForResult(intentPref, ADD_EXPENDITURE_ACTIVITY_CODE);
+                Intent intent = new Intent(v.getContext(), AddExpenditureActivity.class);
+                startActivityForResult(intent, ADD_EXPENDITURE_ACTIVITY_CODE);
             }
         });
-        if (index%5 == 0) {
+        if (index % EXPENDITURE_COLUMN_COUNT == 0) {
             linearLayout = getNewLinearLayoutExpenditure();
-            scrollLayoutExpenditures.addView(linearLayout);
+            layoutExpenditures.addView(linearLayout);
         }
         linearLayout.addView(buttonNewButton);
     }

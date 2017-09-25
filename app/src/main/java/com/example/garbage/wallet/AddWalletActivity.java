@@ -18,18 +18,18 @@ public class AddWalletActivity extends AppCompatActivity {
 
     private Wallet wallet = new Wallet();
 
-    private EditText editTextWalletName;
-    private EditText editTextWalletAmount;
+    private EditText etWalletName;
+    private EditText etWalletAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_wallet);
-        editTextWalletName = (EditText) findViewById(R.id.edit_text_wallet_name);
-        editTextWalletAmount = (EditText) findViewById(R.id.edit_text_wallet_amount);
+        etWalletName = (EditText) findViewById(R.id.et_add_wallet_name);
+        etWalletAmount = (EditText) findViewById(R.id.et_add_wallet_amount);
 
-        ImageButton imageButtonPostWallet = (ImageButton) findViewById(R.id.image_button_post_wallet);
-        imageButtonPostWallet.setOnClickListener(getAddOnClickListener(this));
+        ImageButton ibAddWallet = (ImageButton) findViewById(R.id.ib_add_wallet);
+        ibAddWallet.setOnClickListener(getAddOnClickListener(this));
 
         initSpinnerCurrency();
     }
@@ -38,8 +38,8 @@ public class AddWalletActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wallet.setName(editTextWalletName.getText().toString());
-                wallet.setAmount(editTextWalletAmount.getText().toString());
+                wallet.setName(etWalletName.getText().toString());
+                wallet.setAmount(etWalletAmount.getText().toString());
                 if (wallet.isComplete()) {
                     if (wallet.post(context)) {
                         setResult(RESULT_OK, new Intent());
@@ -51,7 +51,7 @@ public class AddWalletActivity extends AppCompatActivity {
     }
 
     private void initSpinnerCurrency() {
-        Spinner spinnerCurrency = (Spinner) findViewById(R.id.spinner_currency);
+        Spinner spinnerCurrency = (Spinner) findViewById(R.id.s_wallet_currency);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.currency, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCurrency.setAdapter(adapter);

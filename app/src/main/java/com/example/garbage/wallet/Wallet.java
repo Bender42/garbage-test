@@ -18,10 +18,10 @@ public class Wallet {
 
     public static String WALLET_TABLE_NAME = "wallet";
     private static String ID_COLUMN_NAME = "id";
-    private static String NAME_COLUMN_NAME = "name";
-    private static String AMOUNT_COLUMN_NAME = "amount";
-    private static String CURRENCY_COLUMN_NAME = "currency";
-    private static String ICON_COLUMN_NAME = "icon";
+    public static String NAME_COLUMN_NAME = "name";
+    public static String AMOUNT_COLUMN_NAME = "amount";
+    public static String CURRENCY_COLUMN_NAME = "currency";
+    public static String ICON_COLUMN_NAME = "icon";
 
     private Integer id;
     private String name;
@@ -34,15 +34,46 @@ public class Wallet {
 
     public Wallet(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
-        int idName = cursor.getColumnIndex(NAME_COLUMN_NAME);
-        int idAmount = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
-        int idCurrency = cursor.getColumnIndex(CURRENCY_COLUMN_NAME);
-        int idIcon = cursor.getColumnIndex(ICON_COLUMN_NAME);
+        int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
+        int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
+        int currencyIndex = cursor.getColumnIndex(CURRENCY_COLUMN_NAME);
+        int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
-        this.name = cursor.getString(idName);
-        this.amount = new BigDecimal(cursor.getInt(idAmount)).divide(new BigDecimal(100)).setScale(2);
-        this.currency = cursor.getString(idCurrency);
-        this.icon = cursor.getInt(idIcon);
+        this.name = cursor.getString(nameIndex);
+        this.amount = new BigDecimal(cursor.getInt(amountIndex)).divide(new BigDecimal(100)).setScale(2);
+        this.currency = cursor.getString(currencyIndex);
+        this.icon = cursor.getInt(iconIndex);
+    }
+
+    public Wallet(int id, Context context) {
+        this.id = id;
+        SQLiteHelper dbHelper = new SQLiteHelper(context);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(
+                Wallet.WALLET_TABLE_NAME,
+                new String[] {
+                        Wallet.NAME_COLUMN_NAME,
+                        Wallet.AMOUNT_COLUMN_NAME,
+                        Wallet.CURRENCY_COLUMN_NAME,
+                        Wallet.ICON_COLUMN_NAME
+                },
+                "id = ?",
+                new String[] {String.valueOf(id)},
+                null,
+                null,
+                null);
+        if (cursor.moveToFirst()) {
+            int nameIndex = cursor.getColumnIndex(Wallet.NAME_COLUMN_NAME);
+            int amountIndex = cursor.getColumnIndex(Wallet.AMOUNT_COLUMN_NAME);
+            int currencyIndex = cursor.getColumnIndex(Wallet.CURRENCY_COLUMN_NAME);
+            int iconIndex = cursor.getColumnIndex(Wallet.ICON_COLUMN_NAME);
+            this.name = cursor.getString(nameIndex);
+            this.amount = new BigDecimal(cursor.getInt(amountIndex)).divide(new BigDecimal(100)).setScale(2);
+            this.currency = cursor.getString(currencyIndex);
+            this.icon = cursor.getInt(iconIndex);
+        }
+        cursor.close();
+        dbHelper.close();
     }
 
     public boolean isComplete() {
@@ -64,7 +95,20 @@ public class Wallet {
         return true;
     }
 
-    public void draw(ViewGroup view, Context context) {
+    public int update(Context context) {
+        SQLiteHelper dbHelper = new SQLiteHelper(context);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NAME_COLUMN_NAME, name);
+        contentValues.put(ICON_COLUMN_NAME, icon);
+        contentValues.put(CURRENCY_COLUMN_NAME, currency);
+        contentValues.put(AMOUNT_COLUMN_NAME, amount.multiply(new BigDecimal(100)).intValue());
+        int number = database.update(Wallet.WALLET_TABLE_NAME, contentValues, "id = ?", new String[] { String.valueOf(id) });
+        dbHelper.close();
+        return number;
+    }
+
+    public ImageButton draw(ViewGroup view, Context context) {
         LinearLayout linearLayout = new LinearLayout(context);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
@@ -84,6 +128,8 @@ public class Wallet {
         linearLayout.addView(textView);
 
         view.addView(linearLayout);
+
+        return buttonNewButton;
     }
 
     public Integer getId() {

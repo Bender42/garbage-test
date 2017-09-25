@@ -68,39 +68,6 @@
 
     </HorizontalScrollView>
 
-    <HorizontalScrollView
-        android:id="@+id/horizontal_scroll_view_expenditures"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:scrollbars="none"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view_wallets">
-
-        <LinearLayout
-            android:id="@+id/main_layout_expenditures"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/image_button_add_expenditure"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_weight="1"
-                android:text="@string/button_add_wallet"
-                app:srcCompat="@android:drawable/ic_menu_add" />
-
-        </LinearLayout>
-
-    </HorizontalScrollView>
-
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -112,7 +79,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view_expenditures">
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view_wallets">
 
         <LinearLayout
             android:id="@+id/scroll_linear_layout_expenditures"
