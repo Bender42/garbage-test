@@ -21,8 +21,6 @@ public class EditExpenditureActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_expenditure);
 
-        etExpenditureName = (EditText) findViewById(R.id.et_edit_expenditure_name);
-
         Intent intent = getIntent();
         int expenditureId = intent.getIntExtra("expenditureId", 0);
         if (expenditureId == 0) {
@@ -30,6 +28,8 @@ public class EditExpenditureActivity extends AppCompatActivity {
             finish();
         }
         expenditure = new Expenditure(expenditureId, this);
+
+        etExpenditureName = (EditText) findViewById(R.id.et_edit_expenditure_name);
         etExpenditureName.setText(expenditure.getName());
 
         Button bUpdateExpenditure = (Button) findViewById(R.id.b_update_expenditure);

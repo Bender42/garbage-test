@@ -17,7 +17,7 @@ import java.math.BigDecimal;
 public class Wallet {
 
     public static String WALLET_TABLE_NAME = "wallet";
-    private static String ID_COLUMN_NAME = "id";
+    public static String ID_COLUMN_NAME = "id";
     public static String NAME_COLUMN_NAME = "name";
     public static String AMOUNT_COLUMN_NAME = "amount";
     public static String CURRENCY_COLUMN_NAME = "currency";
@@ -123,8 +123,8 @@ public class Wallet {
         ImageButton buttonNewButton = new ImageButton(context);
         buttonNewButton.setId(getId());
         buttonNewButton.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_menu_add, context.getTheme()));
-        buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(80, context));
-        buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(80, context));
+        buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(79, context));
+        buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(79, context));
         linearLayout.addView(buttonNewButton);
 
         TextView textView = new TextView(context);

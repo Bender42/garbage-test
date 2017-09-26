@@ -13,14 +13,12 @@ import com.example.garbage.SQLiteHelper;
 import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.Wallet;
 
-import java.math.BigDecimal;
-
 public class Expenditure {
 
     public static String EXPENDITURE_TABLE_NAME = "expenditure";
-    private static String ID_COLUMN_NAME = "id";
-    private static String NAME_COLUMN_NAME = "name";
-    private static String ICON_COLUMN_NAME = "icon";
+    public static String ID_COLUMN_NAME = "id";
+    public static String NAME_COLUMN_NAME = "name";
+    public static String ICON_COLUMN_NAME = "icon";
 
     private Integer id;
     private String name;
@@ -104,8 +102,8 @@ public class Expenditure {
         ImageButton buttonNewButton = new ImageButton(context);
         buttonNewButton.setId(getId());
         buttonNewButton.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_menu_add, context.getTheme()));
-        buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(80, context));
-        buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(80, context));
+        buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(79, context));
+        buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(79, context));
         linearLayout.addView(buttonNewButton);
 
         TextView textView = new TextView(context);

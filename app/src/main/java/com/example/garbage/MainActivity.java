@@ -21,7 +21,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.example.garbage.cost_item.AddCostItemActivity;
 import com.example.garbage.expenditure.AddExpenditureActivity;
 import com.example.garbage.expenditure.EditExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
@@ -41,14 +43,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int EDIT_WALLET_ACTIVITY_CODE = 3;
     public static int ADD_EXPENDITURE_ACTIVITY_CODE = 4;
     public static int EDIT_EXPENDITURE_ACTIVITY_CODE = 5;
+    public static int ADD_COST_ITEM_ACTIVITY_CODE = 6;
 
     public static int EXPENDITURE_COLUMN_COUNT = 5;
 
     private List<Wallet> wallets = new LinkedList<>();
     private List<Expenditure> expenditures = new LinkedList<>();
+    private Wallet selectedWallet = new Wallet();
+    private Expenditure selectedExpenditure = new Expenditure();
 
     private LinearLayout layoutWallets;
     private LinearLayout layoutExpenditures;
+
+    private TextView fromWallet;
+    private TextView toExpenditure;
 
     private SQLiteHelper dbHelper;
 
@@ -101,19 +109,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         createShortcuts();
         initNavigation();
+        initFromTo();
 
         layoutWallets = (LinearLayout) findViewById(R.id.layout_wallets);
         initAddWalletButton();
-
         layoutExpenditures = (LinearLayout) findViewById(R.id.scroll_linear_layout_expenditures);
 
         redrawWallets();
         redrawExpenditures();
+        redrawFromTo();
+    }
+
+    private void initFromTo() {
+        fromWallet = (TextView) findViewById(R.id.tv_main_from_wallet);
+        toExpenditure = (TextView) findViewById(R.id.tv_main_to_expenditure);
+    }
+
+    private void redrawFromTo() {
+        fromWallet.setText(selectedWallet.getName());
+        toExpenditure.setText(selectedExpenditure.getName());
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
+            selectedWallet.setId(null);
+            selectedWallet.setName(null);
+            selectedExpenditure.setId(null);
+            selectedExpenditure.setName(null);
+            redrawFromTo();
             return;
         }
         if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
@@ -208,6 +232,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (Wallet wallet : wallets) {
             ImageButton walletButton = wallet.draw(layoutWallets, this);
             walletButton.setOnLongClickListener(getOnWalletLongClickListener(wallet.getId()));
+            walletButton.setOnClickListener(getOnWalletClickListener(wallet));
         }
     }
 
@@ -219,6 +244,66 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent.putExtra("walletId", id);
                 startActivityForResult(intent, EDIT_WALLET_ACTIVITY_CODE);
                 return true;
+            }
+        };
+    }
+
+    private View.OnClickListener getOnWalletClickListener(final Wallet wallet) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedExpenditure.getId() != null) {
+                    selectedWallet.setId(wallet.getId());
+                    selectedWallet.setName(wallet.getName());
+                    Intent intent = new Intent(v.getContext(), AddCostItemActivity.class);
+                    intent.putExtra("walletId", selectedWallet.getId());
+                    intent.putExtra("walletName", selectedWallet.getName());
+                    intent.putExtra("expenditureId", selectedExpenditure.getId());
+                    intent.putExtra("expenditureName", selectedExpenditure.getName());
+                    startActivityForResult(intent, ADD_COST_ITEM_ACTIVITY_CODE);
+                } else if (selectedWallet.getId() != null) {
+                    if (selectedWallet.getId().equals(wallet.getId())) {
+                        selectedWallet.setId(null);
+                        selectedWallet.setName(null);
+                    } else {
+                        selectedWallet.setId(wallet.getId());
+                        selectedWallet.setName(wallet.getName());
+                    }
+                } else {
+                    selectedWallet.setId(wallet.getId());
+                    selectedWallet.setName(wallet.getName());
+                }
+                redrawFromTo();
+            }
+        };
+    }
+
+    private View.OnClickListener getOnExpenditureClickListener(final Expenditure expenditure) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedWallet.getId() != null) {
+                    selectedExpenditure.setId(expenditure.getId());
+                    selectedExpenditure.setName(expenditure.getName());
+                    Intent intent = new Intent(v.getContext(), AddCostItemActivity.class);
+                    intent.putExtra("walletId", selectedWallet.getId());
+                    intent.putExtra("walletName", selectedWallet.getName());
+                    intent.putExtra("expenditureId", selectedExpenditure.getId());
+                    intent.putExtra("expenditureName", selectedExpenditure.getName());
+                    startActivityForResult(intent, ADD_COST_ITEM_ACTIVITY_CODE);
+                } else if (selectedExpenditure.getId() != null) {
+                    if (selectedExpenditure.getId().equals(expenditure.getId())) {
+                        selectedExpenditure.setId(null);
+                        selectedExpenditure.setName(null);
+                    } else {
+                        selectedExpenditure.setId(expenditure.getId());
+                        selectedExpenditure.setName(expenditure.getName());
+                    }
+                } else {
+                    selectedExpenditure.setId(expenditure.getId());
+                    selectedExpenditure.setName(expenditure.getName());
+                }
+                redrawFromTo();
             }
         };
     }
@@ -247,8 +332,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 linearLayout = getNewLinearLayoutExpenditure();
                 layoutExpenditures.addView(linearLayout);
             }
-            ImageButton walletButton = expenditure.draw(linearLayout, this);
-            walletButton.setOnLongClickListener(getOnExpenditureLongClickListener(expenditure.getId()));
+            ImageButton expenditureButton = expenditure.draw(linearLayout, this);
+            expenditureButton.setOnLongClickListener(getOnExpenditureLongClickListener(expenditure.getId()));
+            expenditureButton.setOnClickListener(getOnExpenditureClickListener(expenditure));
             index++;
         }
         drawAddExpenditureButton(linearLayout, index);

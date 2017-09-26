@@ -42,8 +42,8 @@
 
                     <ImageButton
                         android:id="@+id/test_button_add_wallet"
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -58,8 +58,8 @@
 
             <ImageButton
                 android:id="@+id/image_button_add_wallet"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="79dp"
+                android:layout_height="79dp"
                 android:layout_weight="1"
                 android:text="@string/button_add_wallet"
                 app:srcCompat="@android:drawable/ic_menu_add" />
@@ -69,17 +69,22 @@
     </HorizontalScrollView>
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:scrollbars="none"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout3"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view_wallets">
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll_view_wallets"
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:id="@+id/scroll_linear_layout_expenditures"
@@ -98,8 +103,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -115,8 +120,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -132,8 +137,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -149,8 +154,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -166,8 +171,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -189,8 +194,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -206,8 +211,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -223,8 +228,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -240,8 +245,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -257,8 +262,8 @@
                     android:orientation="vertical">
 
                     <ImageButton
-                        android:layout_width="80dp"
-                        android:layout_height="80dp"
+                        android:layout_width="79dp"
+                        android:layout_height="79dp"
                         app:srcCompat="@android:drawable/ic_menu_add" />
 
                     <TextView
@@ -270,5 +275,39 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="9dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:id="@+id/linearLayout3">
+
+        <TextView
+            android:id="@+id/tv_main_from_wallet"
+            android:layout_width="178dp"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_menu_send" />
+
+        <TextView
+            android:id="@+id/tv_main_to_expenditure"
+            android:layout_width="177dp"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
