@@ -50,12 +50,12 @@ public class Wallet {
         SQLiteHelper dbHelper = new SQLiteHelper(context);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(
-                Wallet.WALLET_TABLE_NAME,
+                WALLET_TABLE_NAME,
                 new String[] {
-                        Wallet.NAME_COLUMN_NAME,
-                        Wallet.AMOUNT_COLUMN_NAME,
-                        Wallet.CURRENCY_COLUMN_NAME,
-                        Wallet.ICON_COLUMN_NAME
+                        NAME_COLUMN_NAME,
+                        AMOUNT_COLUMN_NAME,
+                        CURRENCY_COLUMN_NAME,
+                        ICON_COLUMN_NAME
                 },
                 "id = ?",
                 new String[] {String.valueOf(id)},
@@ -63,10 +63,10 @@ public class Wallet {
                 null,
                 null);
         if (cursor.moveToFirst()) {
-            int nameIndex = cursor.getColumnIndex(Wallet.NAME_COLUMN_NAME);
-            int amountIndex = cursor.getColumnIndex(Wallet.AMOUNT_COLUMN_NAME);
-            int currencyIndex = cursor.getColumnIndex(Wallet.CURRENCY_COLUMN_NAME);
-            int iconIndex = cursor.getColumnIndex(Wallet.ICON_COLUMN_NAME);
+            int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
+            int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
+            int currencyIndex = cursor.getColumnIndex(CURRENCY_COLUMN_NAME);
+            int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
             this.name = cursor.getString(nameIndex);
             this.amount = new BigDecimal(cursor.getInt(amountIndex)).divide(new BigDecimal(100)).setScale(2);
             this.currency = cursor.getString(currencyIndex);
@@ -103,9 +103,17 @@ public class Wallet {
         contentValues.put(ICON_COLUMN_NAME, icon);
         contentValues.put(CURRENCY_COLUMN_NAME, currency);
         contentValues.put(AMOUNT_COLUMN_NAME, amount.multiply(new BigDecimal(100)).intValue());
-        int number = database.update(Wallet.WALLET_TABLE_NAME, contentValues, "id = ?", new String[] { String.valueOf(id) });
+        int countUpdate = database.update(WALLET_TABLE_NAME, contentValues, "id = ?", new String[] { String.valueOf(id) });
         dbHelper.close();
-        return number;
+        return countUpdate;
+    }
+
+    public int delete(Context context) {
+        SQLiteHelper dbHelper = new SQLiteHelper(context);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        int countDelete = database.delete(WALLET_TABLE_NAME, "id = ?", new String[] { String.valueOf(id) });
+        dbHelper.close();
+        return countDelete;
     }
 
     public ImageButton draw(ViewGroup view, Context context) {

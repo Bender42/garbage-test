@@ -5,15 +5,15 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.garbage.R;
 
 public class EditWalletActivity extends AppCompatActivity {
 
-    private Wallet wallet = new Wallet();
+    private Wallet wallet;
 
     private EditText etWalletName;
     private EditText etWalletAmount;
@@ -38,11 +38,14 @@ public class EditWalletActivity extends AppCompatActivity {
         etWalletAmount.setText(String.valueOf(wallet.getAmount()));
         tvWalletCurrency.setText(wallet.getCurrency());
 
-        ImageButton ibEditWallet = (ImageButton) findViewById(R.id.ib_edit_wallet);
-        ibEditWallet.setOnClickListener(getEditOnClickListener(this));
+        Button bUpdateWallet = (Button) findViewById(R.id.b_update_wallet);
+        bUpdateWallet.setOnClickListener(getUpdateOnClickListener(this));
+
+        Button bDeleteWallet = (Button) findViewById(R.id.b_delete_wallet);
+        bDeleteWallet.setOnClickListener(getDeleteOnClickListener(this));
     }
 
-    private View.OnClickListener getEditOnClickListener(final Context context) {
+    private View.OnClickListener getUpdateOnClickListener(final Context context) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,6 +56,18 @@ public class EditWalletActivity extends AppCompatActivity {
                         setResult(RESULT_OK, new Intent());
                         finish();
                     }
+                }
+            }
+        };
+    }
+
+    private View.OnClickListener getDeleteOnClickListener(final Context context) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (wallet.delete(context) == 1) {
+                    setResult(RESULT_OK, new Intent());
+                    finish();
                 }
             }
         };

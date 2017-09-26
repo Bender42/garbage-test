@@ -23,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import com.example.garbage.expenditure.AddExpenditureActivity;
+import com.example.garbage.expenditure.EditExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.AddWalletActivity;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int ADD_WALLET_ACTIVITY_CODE = 2;
     public static int EDIT_WALLET_ACTIVITY_CODE = 3;
     public static int ADD_EXPENDITURE_ACTIVITY_CODE = 4;
+    public static int EDIT_EXPENDITURE_ACTIVITY_CODE = 5;
 
     public static int EXPENDITURE_COLUMN_COUNT = 5;
 
@@ -126,7 +128,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             expenditures = getExpenditures();
             redrawExpenditures();
         }
-        if (SQL_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+        if (EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            expenditures = getExpenditures();
+            redrawExpenditures();
+        }
+        if (SQL_ACTIVITY_CODE == requestCode) {
             wallets = getWallets();
             redrawWallets();
         }
@@ -201,11 +207,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         layoutWallets.removeAllViews();
         for (Wallet wallet : wallets) {
             ImageButton walletButton = wallet.draw(layoutWallets, this);
-            walletButton.setOnLongClickListener(getOnLongClickListener(wallet.getId()));
+            walletButton.setOnLongClickListener(getOnWalletLongClickListener(wallet.getId()));
         }
     }
 
-    private View.OnLongClickListener getOnLongClickListener(final Integer id) {
+    private View.OnLongClickListener getOnWalletLongClickListener(final Integer id) {
         return new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -241,10 +247,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 linearLayout = getNewLinearLayoutExpenditure();
                 layoutExpenditures.addView(linearLayout);
             }
-            expenditure.draw(linearLayout, this);
+            ImageButton walletButton = expenditure.draw(linearLayout, this);
+            walletButton.setOnLongClickListener(getOnExpenditureLongClickListener(expenditure.getId()));
             index++;
         }
         drawAddExpenditureButton(linearLayout, index);
+    }
+
+    private View.OnLongClickListener getOnExpenditureLongClickListener(final Integer id) {
+        return new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(v.getContext(), EditExpenditureActivity.class);
+                intent.putExtra("expenditureId", id);
+                startActivityForResult(intent, EDIT_EXPENDITURE_ACTIVITY_CODE);
+                return true;
+            }
+        };
     }
 
     private void drawAddExpenditureButton(LinearLayout linearLayout, final int index) {

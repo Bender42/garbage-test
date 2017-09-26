@@ -61,7 +61,8 @@
         <activity android:name=".SQLiteActivity" />
         <activity android:name=".wallet.AddWalletActivity" />
         <activity android:name=".expenditure.AddExpenditureActivity" />
-        <activity android:name=".wallet.EditWalletActivity"/>
+        <activity android:name=".wallet.EditWalletActivity" />
+        <activity android:name=".expenditure.EditExpenditureActivity"></activity>
     </application>
 
 </manifest>
