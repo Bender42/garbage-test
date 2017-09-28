@@ -25,7 +25,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 Wallet.ICON_COLUMN_NAME,
                 Wallet.CURRENCY_COLUMN_NAME,
                 Wallet.AMOUNT_COLUMN_NAME));
-        db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s varchar(255), %s integer, %s integer, %s datetime, %s integer);",
+        db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s varchar(255), %s integer, %s integer, %s long, %s integer);",
                 CostItem.COST_ITEM_TABLE_NAME,
                 CostItem.ID_COLUMN_NAME,
                 CostItem.NAME_COLUMN_NAME,

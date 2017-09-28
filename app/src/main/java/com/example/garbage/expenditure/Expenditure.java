@@ -13,7 +13,9 @@ import com.example.garbage.SQLiteHelper;
 import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.Wallet;
 
-public class Expenditure {
+import java.io.Serializable;
+
+public class Expenditure implements Serializable {
 
     public static String EXPENDITURE_TABLE_NAME = "expenditure";
     public static String ID_COLUMN_NAME = "id";
@@ -117,6 +119,18 @@ public class Expenditure {
         view.addView(linearLayout);
 
         return buttonNewButton;
+    }
+
+    public void updateExpenditure(Expenditure expenditure) {
+        if (expenditure == null) {
+            setId(null);
+            setName(null);
+            setIcon(null);
+        } else {
+            setId(expenditure.getId());
+            setName(expenditure.getName());
+            setIcon(expenditure.getIcon());
+        }
     }
 
     public Integer getId() {

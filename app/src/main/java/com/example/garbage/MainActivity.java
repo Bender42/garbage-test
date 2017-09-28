@@ -1,5 +1,6 @@
 package com.example.garbage;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
@@ -133,11 +134,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
-            selectedWallet.setId(null);
-            selectedWallet.setName(null);
-            selectedExpenditure.setId(null);
-            selectedExpenditure.setName(null);
+            selectedWallet.updateWallet(null);
+            selectedExpenditure.updateExpenditure(null);
             redrawFromTo();
+            redrawWallets();
             return;
         }
         if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
@@ -154,6 +154,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         if (EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
             expenditures = getExpenditures();
+            redrawExpenditures();
+        }
+        if (ADD_COST_ITEM_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            selectedWallet.updateWallet(null);
+            selectedExpenditure.updateExpenditure(null);
+            redrawFromTo();
+            redrawWallets();
             redrawExpenditures();
         }
         if (SQL_ACTIVITY_CODE == requestCode) {
@@ -253,25 +260,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 if (selectedExpenditure.getId() != null) {
-                    selectedWallet.setId(wallet.getId());
-                    selectedWallet.setName(wallet.getName());
-                    Intent intent = new Intent(v.getContext(), AddCostItemActivity.class);
-                    intent.putExtra("walletId", selectedWallet.getId());
-                    intent.putExtra("walletName", selectedWallet.getName());
-                    intent.putExtra("expenditureId", selectedExpenditure.getId());
-                    intent.putExtra("expenditureName", selectedExpenditure.getName());
+                    selectedWallet.updateWallet(wallet);
+                    Intent intent = getCostItemIntent(v.getContext());
                     startActivityForResult(intent, ADD_COST_ITEM_ACTIVITY_CODE);
                 } else if (selectedWallet.getId() != null) {
                     if (selectedWallet.getId().equals(wallet.getId())) {
-                        selectedWallet.setId(null);
-                        selectedWallet.setName(null);
+                        selectedWallet.updateWallet(null);
                     } else {
-                        selectedWallet.setId(wallet.getId());
-                        selectedWallet.setName(wallet.getName());
+                        selectedWallet.updateWallet(wallet);
                     }
                 } else {
-                    selectedWallet.setId(wallet.getId());
-                    selectedWallet.setName(wallet.getName());
+                    selectedWallet.updateWallet(wallet);
                 }
                 redrawFromTo();
             }
@@ -283,29 +282,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onClick(View v) {
                 if (selectedWallet.getId() != null) {
-                    selectedExpenditure.setId(expenditure.getId());
-                    selectedExpenditure.setName(expenditure.getName());
-                    Intent intent = new Intent(v.getContext(), AddCostItemActivity.class);
-                    intent.putExtra("walletId", selectedWallet.getId());
-                    intent.putExtra("walletName", selectedWallet.getName());
-                    intent.putExtra("expenditureId", selectedExpenditure.getId());
-                    intent.putExtra("expenditureName", selectedExpenditure.getName());
+                    selectedExpenditure.updateExpenditure(expenditure);
+                    Intent intent = getCostItemIntent(v.getContext());
                     startActivityForResult(intent, ADD_COST_ITEM_ACTIVITY_CODE);
                 } else if (selectedExpenditure.getId() != null) {
                     if (selectedExpenditure.getId().equals(expenditure.getId())) {
-                        selectedExpenditure.setId(null);
-                        selectedExpenditure.setName(null);
+                        selectedExpenditure.updateExpenditure(null);
                     } else {
-                        selectedExpenditure.setId(expenditure.getId());
-                        selectedExpenditure.setName(expenditure.getName());
+                        selectedExpenditure.updateExpenditure(expenditure);
                     }
                 } else {
-                    selectedExpenditure.setId(expenditure.getId());
-                    selectedExpenditure.setName(expenditure.getName());
+                    selectedExpenditure.updateExpenditure(expenditure);
                 }
                 redrawFromTo();
             }
         };
+    }
+
+    private Intent getCostItemIntent(Context context) {
+        Intent intent = new Intent(context, AddCostItemActivity.class);
+        intent.putExtra("wallet", selectedWallet);
+        intent.putExtra("expenditure", selectedExpenditure);
+        return intent;
     }
 
     private List<Expenditure> getExpenditures() {

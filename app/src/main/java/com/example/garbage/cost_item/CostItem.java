@@ -1,7 +1,12 @@
 package com.example.garbage.cost_item;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
+import com.example.garbage.SQLiteHelper;
+
 import java.math.BigDecimal;
-import java.sql.Time;
 
 public class CostItem {
 
@@ -17,14 +22,29 @@ public class CostItem {
     private String name;
     private Integer wallet;
     private Integer expenditure;
-    private Time time;
+    private Long time;
     private BigDecimal amount;
 
     public CostItem() {
     }
 
     public boolean isComplete() {
-        return amount != null && BigDecimal.ZERO.compareTo(amount) != 1;
+        return amount != null && BigDecimal.ZERO.compareTo(amount) != 1 &&
+                wallet != null && expenditure != null && time != null;
+    }
+
+    public boolean post(Context context) {
+        SQLiteHelper dbHelper = new SQLiteHelper(context);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(NAME_COLUMN_NAME, name);
+        contentValues.put(WALLET_COLUMN_NAME, wallet);
+        contentValues.put(EXPENDITURE_COLUMN_NAME, expenditure);
+        contentValues.put(TIME_COLUMN_NAME, time);
+        contentValues.put(AMOUNT_COLUMN_NAME, amount.multiply(new BigDecimal(100)).intValue());
+        database.insert(COST_ITEM_TABLE_NAME, null, contentValues);
+        dbHelper.close();
+        return true;
     }
 
     public Integer getId() {
@@ -59,11 +79,11 @@ public class CostItem {
         this.expenditure = expenditure;
     }
 
-    public Time getTime() {
+    public Long getTime() {
         return time;
     }
 
-    public void setTime(Time time) {
+    public void setTime(Long time) {
         this.time = time;
     }
 

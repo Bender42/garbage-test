@@ -12,9 +12,10 @@ import android.widget.TextView;
 import com.example.garbage.SQLiteHelper;
 import com.example.garbage.tools.GarbageTools;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class Wallet {
+public class Wallet implements Serializable {
 
     public static String WALLET_TABLE_NAME = "wallet";
     public static String ID_COLUMN_NAME = "id";
@@ -138,6 +139,22 @@ public class Wallet {
         view.addView(linearLayout);
 
         return buttonNewButton;
+    }
+
+    public void updateWallet(Wallet wallet) {
+        if (wallet == null) {
+            setId(null);
+            setName(null);
+            setAmount((BigDecimal) null);
+            setCurrency(null);
+            setIcon(null);
+        } else {
+            setId(wallet.getId());
+            setName(wallet.getName());
+            setAmount(wallet.getAmount());
+            setCurrency(wallet.getCurrency());
+            setIcon(wallet.getIcon());
+        }
     }
 
     public Integer getId() {
