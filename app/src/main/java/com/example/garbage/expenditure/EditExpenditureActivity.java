@@ -24,6 +24,7 @@ public class EditExpenditureActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int expenditureId = intent.getIntExtra("expenditureId", 0);
         if (expenditureId == 0) {
+            //TODO Не работает, приложение падает
             setResult(RESULT_CANCELED, new Intent());
             finish();
         }

@@ -7,10 +7,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.garbage.cost_item.CostItem;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
+import com.example.garbage.wallet_operation.WalletOperation;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
-
-    public static String WALLET_OPERATION_TABLE_NAME = "wallet_operation";
 
     public SQLiteHelper(Context context) {
         super(context, "myDB", null, 1);
@@ -38,12 +37,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 Expenditure.ID_COLUMN_NAME,
                 Expenditure.NAME_COLUMN_NAME,
                 Expenditure.ICON_COLUMN_NAME));
-        db.execSQL(String.format("create table %s (" +
-                "id integer primary key autoincrement, " +
-                "wallet integer, " +
-                "from_wallet integer," +
-                "amount integer," +
-                "description varchar(255));", WALLET_OPERATION_TABLE_NAME));
+        db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s integer, %s integer, %s integer, %s varchar(255), %s long);",
+                WalletOperation.WALLET_OPERATION_TABLE_NAME,
+                WalletOperation.ID_COLUMN_NAME,
+                WalletOperation.FROM_WALLET_COLUMN_NAME,
+                WalletOperation.TO_WALLET_COLUMN_NAME,
+                WalletOperation.AMOUNT_COLUMN_NAME,
+                WalletOperation.NAME_COLUMN_NAME,
+                WalletOperation.TIME_COLUMN_NAME));
     }
 
     @Override

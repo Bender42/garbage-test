@@ -1,6 +1,7 @@
 package com.example.garbage.cost_item;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.garbage.R;
@@ -19,21 +20,23 @@ import com.example.garbage.wallet.Wallet;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
-public class AddCostItemActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class AddCostItemActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private CostItem costItem = new CostItem();
+    Wallet selectedWallet;
+    Expenditure selectedExpenditure;
 
     private EditText etCostItemName;
     private EditText etCostItemAmount;
     private TextView tvCostItemDate;
+    private TextView tvCostItemTime;
 
     private DatePickerDialog costItemDatePickedDialog;
+    private TimePickerDialog costItemTimePickedDialog;
 
-    Wallet selectedWallet;
-    Expenditure selectedExpenditure;
-    Long costItemDate;
+    Long costItemDateTime;
+    Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,7 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
         etCostItemName = (EditText) findViewById(R.id.et_cost_item_name);
         etCostItemAmount = (EditText) findViewById(R.id.et_cost_item_amount);
         tvCostItemDate = (TextView) findViewById(R.id.tv_cost_item_date);
+        tvCostItemTime = (TextView) findViewById(R.id.tv_cost_item_time);
 
         tvWalletName.setText(selectedWallet.getName());
         tvWalletCurrency.setText(selectedWallet.getCurrency());
@@ -56,21 +60,28 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
         Button bAddCostItem = (Button) findViewById(R.id.b_add_cost_item);
         bAddCostItem.setOnClickListener(getAddCostItemOnClickListener(this));
 
-        ImageButton ibCostItemDate = (ImageButton) findViewById(R.id.ib_cost_item_date);
-        ibCostItemDate.setOnClickListener(getSelectDateOnClickListener());
+        calendar = Calendar.getInstance();
+        costItemDateTime = calendar.getTimeInMillis();
 
-        Calendar calendar = Calendar.getInstance();
-        costItemDate = calendar.getTimeInMillis();
         costItemDatePickedDialog = new DatePickerDialog(
-                this,
-                AddCostItemActivity.this,
+                this, this,
                 calendar.get(Calendar.YEAR),
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
+        SimpleDateFormat formatDate = new SimpleDateFormat(getResources().getString(R.string.date_label_format));
+        tvCostItemDate.setText(formatDate.format(calendar.getTime()));
+        tvCostItemDate.setOnClickListener(getSelectDateOnClickListener());
 
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyyг.");
-        tvCostItemDate.setText(format.format(calendar.getTime()));
+        costItemTimePickedDialog = new TimePickerDialog(
+                this, this,
+                calendar.get(Calendar.HOUR_OF_DAY),
+                calendar.get(Calendar.MINUTE),
+                true
+        );
+        SimpleDateFormat formatTime = new SimpleDateFormat(getResources().getString(R.string.time_label_format));
+        tvCostItemTime.setText(formatTime.format(calendar.getTime()));
+        tvCostItemTime.setOnClickListener(getSelectTimeOnClickListener());
     }
 
     private View.OnClickListener getSelectDateOnClickListener() {
@@ -82,6 +93,15 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
         };
     }
 
+    private View.OnClickListener getSelectTimeOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                costItemTimePickedDialog.show();
+            }
+        };
+    }
+
     private View.OnClickListener getAddCostItemOnClickListener(final Context context) {
         return new View.OnClickListener() {
             @Override
@@ -89,21 +109,19 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
                 costItem.setName(etCostItemName.getText().toString());
                 costItem.setWallet(selectedWallet.getId());
                 costItem.setExpenditure(selectedExpenditure.getId());
-                costItem.setTime(costItemDate);
+                costItem.setTime(costItemDateTime);
                 costItem.setAmount(etCostItemAmount.getText().toString());
                 if (costItem.isComplete()) {
                     if (costItem.getAmount().compareTo(selectedWallet.getAmount()) == 1) {
-                        Toast.makeText(v.getContext(), "Сумма списания не может быть больше остатка на кошельке", Toast.LENGTH_LONG).show();
+                        Toast.makeText(v.getContext(), getResources().getString(R.string.not_enough_amount_on_wallet), Toast.LENGTH_LONG).show();
                     } else {
-                        //TODO Добавить потоки
-                        if (costItem.post(context)) {
-                            selectedWallet.setAmount(selectedWallet.getAmount().subtract(costItem.getAmount()));
-                            if (selectedWallet.update(context) == 1) {
-                                setResult(RESULT_OK, new Intent());
-                                finish();
-                            }
+                        if (costItem.post(context, selectedWallet)) {
+                            setResult(RESULT_OK, new Intent());
+                            finish();
                         }
                     }
+                } else {
+                    Toast.makeText(v.getContext(), getResources().getString(R.string.input_not_all_required_fields), Toast.LENGTH_LONG).show();
                 }
             }
         };
@@ -113,8 +131,8 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
         Intent intent = getIntent();
         selectedWallet = (Wallet) intent.getSerializableExtra("wallet");
         selectedExpenditure = (Expenditure) intent.getSerializableExtra("expenditure");
-        if (selectedWallet.getId() == 0 || selectedWallet.getName() == null ||
-                selectedExpenditure.getId() == 0 || selectedExpenditure.getName() == null) {
+        if (selectedWallet == null || selectedExpenditure == null) {
+            //TODO Не работает, приложение падает
             setResult(RESULT_CANCELED, new Intent());
             finish();
         }
@@ -122,10 +140,23 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        Calendar calendar = Calendar.getInstance();
         calendar.set(year, month, dayOfMonth);
-        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyyг.");
-        costItemDate = calendar.getTimeInMillis();
+        SimpleDateFormat format = new SimpleDateFormat(getResources().getString(R.string.date_label_format));
+        costItemDateTime = calendar.getTimeInMillis();
         tvCostItemDate.setText(format.format(calendar.getTime()));
+    }
+
+    @Override
+    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+        calendar.set(
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH),
+                hourOfDay,
+                minute
+        );
+        SimpleDateFormat formatTime = new SimpleDateFormat(getResources().getString(R.string.time_label_format));
+        costItemDateTime = calendar.getTimeInMillis();
+        tvCostItemTime.setText(formatTime.format(calendar.getTime()));
     }
 }

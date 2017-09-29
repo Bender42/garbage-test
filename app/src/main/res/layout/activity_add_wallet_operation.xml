@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.garbage.cost_item.AddCostItemActivity">
+    tools:context="com.example.garbage.wallet_operation.AddWalletOperationActivity">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -22,16 +22,16 @@
         android:id="@+id/linearLayout2">
 
         <TextView
-            android:id="@+id/tv_cost_item_wallet_label"
+            android:id="@+id/tv_wallet_oper_from_wallet_label"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Кошелек"
+            android:text="Из"
             android:textAlignment="textStart"
             android:textSize="18sp"
             tools:textAlignment="center" />
 
         <TextView
-            android:id="@+id/tv_cost_item_wallet_name"
+            android:id="@+id/tv_wallet_oper_from_wallet_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -55,16 +55,16 @@
         android:id="@+id/linearLayout4">
 
         <TextView
-            android:id="@+id/tv_cost_item_expenditure_label"
+            android:id="@+id/tv_wallet_oper_to_wallet_label"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="Статья"
+            android:text="В"
             android:textAlignment="textStart"
             android:textSize="18sp"
             tools:textAlignment="center" />
 
         <TextView
-            android:id="@+id/tv_cost_item_expenditure_name"
+            android:id="@+id/tv_wallet_oper_to_wallet_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -88,7 +88,7 @@
         android:id="@+id/linearLayout5">
 
         <TextView
-            android:id="@+id/tv_cost_item_time_label"
+            android:id="@+id/tv_wallet_oper_time_label"
             android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical|left"
@@ -97,7 +97,7 @@
             tools:textAlignment="center" />
 
         <TextView
-            android:id="@+id/tv_cost_item_date"
+            android:id="@+id/tv_wallet_oper_date"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1.45"
@@ -106,7 +106,7 @@
             tools:text="12.12.2018г." />
 
         <TextView
-            android:id="@+id/tv_cost_item_time"
+            android:id="@+id/tv_wallet_oper_time"
             android:layout_width="150dp"
             android:layout_height="match_parent"
             android:layout_weight="0.61"
@@ -130,12 +130,12 @@
         android:id="@+id/linearLayout7">
 
         <EditText
-            android:id="@+id/et_cost_item_name"
+            android:id="@+id/et_wallet_oper_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
-            android:hint="Описание платежа"
+            android:hint="Описание операции"
             android:inputType="textPersonName"
             android:textAlignment="textStart" />
     </LinearLayout>
@@ -156,7 +156,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
 
         <TextView
-            android:id="@+id/tv_cost_item_amount_label"
+            android:id="@+id/tv_wallet_oper_amount_label"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="Сумма"
@@ -165,28 +165,28 @@
             tools:textAlignment="center" />
 
         <EditText
-            android:id="@+id/et_cost_item_amount"
+            android:id="@+id/et_wallet_oper_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textSize="18sp"
-            android:inputType="numberDecimal"/>
+            android:inputType="numberDecimal"
+            android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/tv_cost_item_wallet_currency"
+            android:id="@+id/tv_wallet_oper_to_wallet_currency"
             android:layout_width="88dp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/b_add_cost_item"
+        android:id="@+id/b_add_wallet_oper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
-        android:text="Add"
         android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
+        android:text="Add"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 

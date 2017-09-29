@@ -5,8 +5,11 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.garbage.SQLiteHelper;
+import com.example.garbage.wallet.Wallet;
 
 import java.math.BigDecimal;
+
+import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
 
 public class CostItem {
 
@@ -33,18 +36,35 @@ public class CostItem {
                 wallet != null && expenditure != null && time != null;
     }
 
-    public boolean post(Context context) {
-        SQLiteHelper dbHelper = new SQLiteHelper(context);
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(NAME_COLUMN_NAME, name);
-        contentValues.put(WALLET_COLUMN_NAME, wallet);
-        contentValues.put(EXPENDITURE_COLUMN_NAME, expenditure);
-        contentValues.put(TIME_COLUMN_NAME, time);
-        contentValues.put(AMOUNT_COLUMN_NAME, amount.multiply(new BigDecimal(100)).intValue());
-        database.insert(COST_ITEM_TABLE_NAME, null, contentValues);
-        dbHelper.close();
-        return true;
+    /**
+     * TODO добавить поддержку транзакций
+     * Создаем запись элемента расхода с последующим уменьшением баланса кошелька списания
+     *
+     * @param targetWallet  кошелек списания
+     */
+    public boolean post(Context context, Wallet targetWallet) {
+        try {
+            SQLiteHelper dbHelper = new SQLiteHelper(context);
+            SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+            ContentValues costItemContentValues = new ContentValues();
+            costItemContentValues.put(NAME_COLUMN_NAME, name);
+            costItemContentValues.put(WALLET_COLUMN_NAME, wallet);
+            costItemContentValues.put(EXPENDITURE_COLUMN_NAME, expenditure);
+            costItemContentValues.put(TIME_COLUMN_NAME, time);
+            costItemContentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
+            database.insert(COST_ITEM_TABLE_NAME, null, costItemContentValues);
+
+            ContentValues walletContentValues = new ContentValues();
+            BigDecimal walletResultAmount = targetWallet.getAmount().subtract(amount);
+            walletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(walletResultAmount));
+            database.update(Wallet.WALLET_TABLE_NAME, walletContentValues, "id = ?", new String[]{String.valueOf(targetWallet.getId())});
+
+            dbHelper.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public Integer getId() {

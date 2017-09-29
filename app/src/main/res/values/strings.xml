@@ -40,7 +40,7 @@
         <item>USD</item>
         <item>EUR</item>
     </string-array>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Garbage</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -50,4 +50,10 @@
     <string name="expenditure_name">Имя расхода</string>
     <string name="test_text_view_expenditure">Расход</string>
     <string name="wallet_edit_context_text">Редактировать</string>
+
+    <string name="not_enough_amount_on_wallet">Сумма списания не может быть больше остатка на кошельке</string>
+    <string name="input_not_all_required_fields">Заполены не все обязательные поля</string>
+    <string name="not_equal_currencies">Валюты кошельков не могут быть разными</string>
+    <string name="date_label_format">dd.MM.yyyyг.</string>
+    <string name="time_label_format">HH:mm</string>
 </resources>

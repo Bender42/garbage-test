@@ -23,19 +23,23 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.garbage.cost_item.AddCostItemActivity;
 import com.example.garbage.expenditure.AddExpenditureActivity;
 import com.example.garbage.expenditure.EditExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
-import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.EditWalletActivity;
 import com.example.garbage.wallet.Wallet;
+import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+
+import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int ADD_EXPENDITURE_ACTIVITY_CODE = 4;
     public static int EDIT_EXPENDITURE_ACTIVITY_CODE = 5;
     public static int ADD_COST_ITEM_ACTIVITY_CODE = 6;
+    public static int ADD_WALLET_OPERATION_ACTIVITY_CODE = 7;
 
     public static int EXPENDITURE_COLUMN_COUNT = 5;
 
@@ -134,39 +139,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
-            selectedWallet.updateWallet(null);
-            selectedExpenditure.updateExpenditure(null);
-            redrawFromTo();
-            redrawWallets();
-            return;
-        }
-        if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            redrawMainActivity();
+        } else if ((ADD_WALLET_ACTIVITY_CODE == requestCode || EDIT_WALLET_ACTIVITY_CODE == requestCode)
+                && RESULT_OK == resultCode) {
             wallets = getWallets();
             redrawWallets();
-        }
-        if (EDIT_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            wallets = getWallets();
-            redrawWallets();
-        }
-        if (ADD_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+        } else if ((ADD_EXPENDITURE_ACTIVITY_CODE == requestCode || EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode)
+                && RESULT_OK == resultCode) {
             expenditures = getExpenditures();
             redrawExpenditures();
-        }
-        if (EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            expenditures = getExpenditures();
-            redrawExpenditures();
-        }
-        if (ADD_COST_ITEM_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            selectedWallet.updateWallet(null);
-            selectedExpenditure.updateExpenditure(null);
-            redrawFromTo();
-            redrawWallets();
-            redrawExpenditures();
-        }
-        if (SQL_ACTIVITY_CODE == requestCode) {
+        } else if ((ADD_COST_ITEM_ACTIVITY_CODE == requestCode || ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode)
+                && RESULT_OK == resultCode) {
+            redrawMainActivity();
+        } else if (SQL_ACTIVITY_CODE == requestCode) {
             wallets = getWallets();
             redrawWallets();
         }
+    }
+
+    private void redrawMainActivity() {
+        selectedWallet.updateWallet(null);
+        selectedExpenditure.updateExpenditure(null);
+        redrawFromTo();
+        redrawWallets();
+        redrawExpenditures();
     }
 
     private void createShortcuts() {
@@ -267,7 +263,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     if (selectedWallet.getId().equals(wallet.getId())) {
                         selectedWallet.updateWallet(null);
                     } else {
-                        selectedWallet.updateWallet(wallet);
+                        if (!Objects.equals(selectedWallet.getCurrency(), wallet.getCurrency())) {
+                            Toast.makeText(v.getContext(), getResources().getString(R.string.not_equal_currencies), Toast.LENGTH_LONG).show();
+                        } else {
+                            Intent intent = getWalletOperationIntent(v.getContext(), selectedWallet, wallet);
+                            startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
+                            selectedWallet.updateWallet(wallet);
+                        }
                     }
                 } else {
                     selectedWallet.updateWallet(wallet);
@@ -303,6 +305,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(context, AddCostItemActivity.class);
         intent.putExtra("wallet", selectedWallet);
         intent.putExtra("expenditure", selectedExpenditure);
+        return intent;
+    }
+
+    private Intent getWalletOperationIntent(Context context, Wallet fromWallet, Wallet toWallet) {
+        Intent intent = new Intent(context, AddWalletOperationActivity.class);
+        intent.putExtra("fromWallet", fromWallet);
+        intent.putExtra("toWallet", toWallet);
         return intent;
     }
 
@@ -353,8 +362,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void drawAddExpenditureButton(LinearLayout linearLayout, final int index) {
         ImageButton buttonNewButton = new ImageButton(this);
         buttonNewButton.setImageDrawable(this.getResources().getDrawable(android.R.drawable.ic_menu_add, this.getTheme()));
-        buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(80, this));
-        buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(80, this));
+        buttonNewButton.setMinimumHeight(convertDpsTpPixels(80, this));
+        buttonNewButton.setMinimumWidth(convertDpsTpPixels(80, this));
         buttonNewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

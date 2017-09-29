@@ -7,6 +7,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:screenOrientation="portrait"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -15,10 +16,8 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
@@ -34,7 +33,6 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/garbage_widget_info" />
@@ -63,7 +61,8 @@
         <activity android:name=".expenditure.AddExpenditureActivity" />
         <activity android:name=".wallet.EditWalletActivity" />
         <activity android:name=".expenditure.EditExpenditureActivity" />
-        <activity android:name=".cost_item.AddCostItemActivity"></activity>
+        <activity android:name=".cost_item.AddCostItemActivity" />
+        <activity android:name=".wallet_operation.AddWalletOperationActivity" />
     </application>
 
 </manifest>

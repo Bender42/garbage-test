@@ -10,10 +10,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.garbage.SQLiteHelper;
-import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.Wallet;
 
 import java.io.Serializable;
+
+import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
 
 public class Expenditure implements Serializable {
 
@@ -104,8 +105,8 @@ public class Expenditure implements Serializable {
         ImageButton buttonNewButton = new ImageButton(context);
         buttonNewButton.setId(getId());
         buttonNewButton.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_menu_add, context.getTheme()));
-        buttonNewButton.setMinimumHeight(GarbageTools.convertDpsTpPixels(79, context));
-        buttonNewButton.setMinimumWidth(GarbageTools.convertDpsTpPixels(79, context));
+        buttonNewButton.setMinimumHeight(convertDpsTpPixels(79, context));
+        buttonNewButton.setMinimumWidth(convertDpsTpPixels(79, context));
         linearLayout.addView(buttonNewButton);
 
         TextView textView = new TextView(context);
