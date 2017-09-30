@@ -2,7 +2,9 @@ package com.example.garbage.wallet_operation;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 
 import com.example.garbage.SQLiteHelper;
 import com.example.garbage.wallet.Wallet;
@@ -10,6 +12,7 @@ import com.example.garbage.wallet.Wallet;
 import java.math.BigDecimal;
 
 import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
+import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
 public class WalletOperation {
 
@@ -29,6 +32,21 @@ public class WalletOperation {
     private Long time;
 
     public WalletOperation() {
+    }
+
+    public WalletOperation(Cursor cursor) {
+        int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
+        int fromWalletIndex = cursor.getColumnIndex(FROM_WALLET_COLUMN_NAME);
+        int toWalletIndex = cursor.getColumnIndex(TO_WALLET_COLUMN_NAME);
+        int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
+        int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
+        int timeIndex = cursor.getColumnIndex(TIME_COLUMN_NAME);
+        this.id = cursor.getInt(idIndex);
+        this.fromWallet = cursor.getInt(fromWalletIndex);
+        this.toWallet = cursor.getInt(toWalletIndex);
+        this.amount = convertIntToAmount(cursor.getInt(amountIndex));
+        this.name = cursor.getString(nameIndex);
+        this.time = cursor.getLong(timeIndex);
     }
 
     public boolean isComplete() {

@@ -70,7 +70,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
-        SimpleDateFormat formatDate = new SimpleDateFormat(getResources().getString(R.string.date_label_format));
+        SimpleDateFormat formatDate = new SimpleDateFormat(getString(R.string.date_label_format));
         tvWalletOperationDate.setText(formatDate.format(calendar.getTime()));
         tvWalletOperationDate.setOnClickListener(getSelectDateOnClickListener());
 
@@ -80,7 +80,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 calendar.get(Calendar.MINUTE),
                 true
         );
-        SimpleDateFormat formatTime = new SimpleDateFormat(getResources().getString(R.string.time_label_format));
+        SimpleDateFormat formatTime = new SimpleDateFormat(getString(R.string.time_label_format));
         tvWalletOperationTime.setText(formatTime.format(calendar.getTime()));
         tvWalletOperationTime.setOnClickListener(getSelectTimeOnClickListener());
     }
@@ -144,7 +144,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         calendar.set(year, month, dayOfMonth);
-        SimpleDateFormat format = new SimpleDateFormat(getResources().getString(R.string.date_label_format));
+        SimpleDateFormat format = new SimpleDateFormat(getString(R.string.date_label_format));
         walletOperationDateTime = calendar.getTimeInMillis();
         tvWalletOperationDate.setText(format.format(calendar.getTime()));
     }
@@ -158,7 +158,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 hourOfDay,
                 minute
         );
-        SimpleDateFormat formatTime = new SimpleDateFormat(getResources().getString(R.string.time_label_format));
+        SimpleDateFormat formatTime = new SimpleDateFormat(getString(R.string.time_label_format));
         walletOperationDateTime = calendar.getTimeInMillis();
         tvWalletOperationTime.setText(formatTime.format(calendar.getTime()));
     }

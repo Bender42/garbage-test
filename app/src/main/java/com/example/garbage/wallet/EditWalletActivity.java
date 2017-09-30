@@ -4,28 +4,39 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.garbage.R;
+import com.example.garbage.wallet_operation.WalletOperation;
+import com.example.garbage.wallet_operation.WalletOperationAdapter;
+import com.example.garbage.wallet_operation.WalletOperationsDao;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class EditWalletActivity extends AppCompatActivity {
 
     private Wallet wallet;
+    private List<WalletOperation> walletOperations = new LinkedList<>();
+
+    private WalletOperationsDao walletOperationsDao;
 
     private EditText etWalletName;
     private EditText etWalletAmount;
+
+    private RecyclerView rvWalletOperations;
+    private RecyclerView.Adapter adapterWalletOperations;
+    private RecyclerView.LayoutManager layoutManagerWalletOperations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_wallet);
-
-        etWalletName = (EditText) findViewById(R.id.et_edit_wallet_name);
-        etWalletAmount = (EditText) findViewById(R.id.et_edit_wallet_amount);
-        TextView tvWalletCurrency = (TextView) findViewById(R.id.tv_edit_wallet_currency);
 
         Intent intent = getIntent();
         int walletId = intent.getIntExtra("walletId", 0);
@@ -35,8 +46,17 @@ public class EditWalletActivity extends AppCompatActivity {
             finish();
         }
         wallet = new Wallet(walletId, this);
+
+        walletOperationsDao = new WalletOperationsDao(this);
+        walletOperations = walletOperationsDao.getWalletOperations(walletId);
+
+        etWalletName = (EditText) findViewById(R.id.et_edit_wallet_name);
         etWalletName.setText(wallet.getName());
+
+        etWalletAmount = (EditText) findViewById(R.id.et_edit_wallet_amount);
         etWalletAmount.setText(String.valueOf(wallet.getAmount()));
+
+        TextView tvWalletCurrency = (TextView) findViewById(R.id.tv_edit_wallet_currency);
         tvWalletCurrency.setText(wallet.getCurrency());
 
         Button bUpdateWallet = (Button) findViewById(R.id.b_update_wallet);
@@ -44,6 +64,19 @@ public class EditWalletActivity extends AppCompatActivity {
 
         Button bDeleteWallet = (Button) findViewById(R.id.b_delete_wallet);
         bDeleteWallet.setOnClickListener(getDeleteOnClickListener(this));
+
+        initRecyclerViewWalletOperation();
+    }
+
+    private void initRecyclerViewWalletOperation() {
+        rvWalletOperations = (RecyclerView) findViewById(R.id.rv_wallet_wallet_operation_list);
+        rvWalletOperations.setHasFixedSize(false);
+
+        layoutManagerWalletOperations = new LinearLayoutManager(this);
+        rvWalletOperations.setLayoutManager(layoutManagerWalletOperations);
+
+        adapterWalletOperations = new WalletOperationAdapter(walletOperations, wallet);
+        rvWalletOperations.setAdapter(adapterWalletOperations);
     }
 
     private View.OnClickListener getUpdateOnClickListener(final Context context) {

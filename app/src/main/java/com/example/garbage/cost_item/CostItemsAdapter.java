@@ -26,10 +26,11 @@ public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.View
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.ivName.setText(costItems.get(position).getName());
-        holder.ivAmount.setText(String.valueOf(costItems.get(position).getAmount()));
-        holder.ivWalletCurrency.setText(costItems.get(position).getWalletCurrency());
-        holder.itemWalletName.setText(costItems.get(position).getWalletName());
+        CostItem select = costItems.get(position);
+        holder.name.setText(select.getName());
+        holder.amount.setText(String.valueOf(select.getAmount()));
+        holder.walletCurrency.setText(select.getWalletCurrency());
+        holder.walletName.setText(select.getWalletName());
     }
 
     @Override
@@ -39,17 +40,17 @@ public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        public TextView ivName;
-        public TextView ivAmount;
-        public TextView ivWalletCurrency;
-        public TextView itemWalletName;
+        public TextView name;
+        public TextView amount;
+        public TextView walletCurrency;
+        public TextView walletName;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            ivName = (TextView) itemView.findViewById(R.id.tv_cost_item_view_name);
-            ivAmount = (TextView) itemView.findViewById(R.id.tv_cost_item_view_amount);
-            ivWalletCurrency = (TextView) itemView.findViewById(R.id.tv_cost_item_view_wallet_currency);
-            itemWalletName = (TextView) itemView.findViewById(R.id.tv_cost_item_view_wallet_name);
+            name = (TextView) itemView.findViewById(R.id.tv_cost_item_view_name);
+            amount = (TextView) itemView.findViewById(R.id.tv_cost_item_view_amount);
+            walletCurrency = (TextView) itemView.findViewById(R.id.tv_cost_item_view_wallet_currency);
+            walletName = (TextView) itemView.findViewById(R.id.tv_cost_item_view_wallet_name);
         }
     }
 }
