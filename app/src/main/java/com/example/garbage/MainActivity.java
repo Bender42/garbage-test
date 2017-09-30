@@ -32,11 +32,14 @@ import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.EditWalletActivity;
 import com.example.garbage.wallet.Wallet;
+import com.example.garbage.wallet.WalletsDao;
 import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
@@ -53,8 +56,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public static int EXPENDITURE_COLUMN_COUNT = 5;
 
-    private List<Wallet> wallets = new LinkedList<>();
+    private WalletsDao walletsDao;
+
+    private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
     private List<Expenditure> expenditures = new LinkedList<>();
+
     private Wallet selectedWallet = new Wallet();
     private Expenditure selectedExpenditure = new Expenditure();
 
@@ -110,7 +116,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         dbHelper = new SQLiteHelper(this);
 
-        wallets = getWallets();
+        walletsDao = new WalletsDao(this);
+        wallets = walletsDao.getWallets();
         expenditures = getExpenditures();
 
         createShortcuts();
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             redrawMainActivity();
         } else if ((ADD_WALLET_ACTIVITY_CODE == requestCode || EDIT_WALLET_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
-            wallets = getWallets();
+            wallets = walletsDao.getWallets();
             redrawWallets();
         } else if ((ADD_EXPENDITURE_ACTIVITY_CODE == requestCode || EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
@@ -152,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 && RESULT_OK == resultCode) {
             redrawMainActivity();
         } else if (SQL_ACTIVITY_CODE == requestCode) {
-            wallets = getWallets();
+            wallets = walletsDao.getWallets();
             redrawWallets();
         }
     }
@@ -216,23 +223,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
-    private List<Wallet> getWallets() {
-        List<Wallet> wallets = new LinkedList<>();
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Cursor cursor = database.query(Wallet.WALLET_TABLE_NAME, null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                wallets.add(new Wallet(cursor));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        dbHelper.close();
-        return wallets;
-    }
-
     private void redrawWallets() {
         layoutWallets.removeAllViews();
-        for (Wallet wallet : wallets) {
+        for (Wallet wallet : wallets.values()) {
             ImageButton walletButton = wallet.draw(layoutWallets, this);
             walletButton.setOnLongClickListener(getOnWalletLongClickListener(wallet.getId()));
             walletButton.setOnClickListener(getOnWalletClickListener(wallet));

@@ -14,4 +14,8 @@ public class GarbageTools {
     public static int convertAmountToInt(BigDecimal amount) {
         return amount.multiply(new BigDecimal(100)).intValue();
     }
+
+    public static BigDecimal convertIntToAmount(int amount) {
+        return new BigDecimal(amount).divide(new BigDecimal(100)).setScale(2);
+    }
 }

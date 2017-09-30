@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
+import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
 public class Wallet implements Serializable {
 
@@ -42,7 +43,7 @@ public class Wallet implements Serializable {
         int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(nameIndex);
-        this.amount = new BigDecimal(cursor.getInt(amountIndex)).divide(new BigDecimal(100)).setScale(2);
+        this.amount = convertIntToAmount(cursor.getInt(amountIndex));
         this.currency = cursor.getString(currencyIndex);
         this.icon = cursor.getInt(iconIndex);
     }
@@ -53,12 +54,7 @@ public class Wallet implements Serializable {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(
                 WALLET_TABLE_NAME,
-                new String[] {
-                        NAME_COLUMN_NAME,
-                        AMOUNT_COLUMN_NAME,
-                        CURRENCY_COLUMN_NAME,
-                        ICON_COLUMN_NAME
-                },
+                null,
                 "id = ?",
                 new String[] {String.valueOf(id)},
                 null,

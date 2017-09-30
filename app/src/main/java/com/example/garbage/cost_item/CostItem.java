@@ -2,6 +2,7 @@ package com.example.garbage.cost_item;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.garbage.SQLiteHelper;
@@ -10,6 +11,7 @@ import com.example.garbage.wallet.Wallet;
 import java.math.BigDecimal;
 
 import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
+import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
 public class CostItem {
 
@@ -28,7 +30,25 @@ public class CostItem {
     private Long time;
     private BigDecimal amount;
 
+    private String walletName;
+    private String walletCurrency;
+
     public CostItem() {
+    }
+
+    public CostItem(Cursor cursor) {
+        int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
+        int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
+        int walletIndex = cursor.getColumnIndex(WALLET_COLUMN_NAME);
+        int expenditureIndex = cursor.getColumnIndex(EXPENDITURE_COLUMN_NAME);
+        int timeIndex = cursor.getColumnIndex(TIME_COLUMN_NAME);
+        int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
+        this.id = cursor.getInt(idIndex);
+        this.name = cursor.getString(nameIndex);
+        this.wallet = cursor.getInt(walletIndex);
+        this.expenditure = cursor.getInt(expenditureIndex);
+        this.time = cursor.getLong(timeIndex);
+        this.amount = convertIntToAmount(cursor.getInt(amountIndex));
     }
 
     public boolean isComplete() {
@@ -117,5 +137,21 @@ public class CostItem {
 
     public void setAmount(String amount) {
         this.amount = amount != null && amount.length() != 0 ? new BigDecimal(amount) : null;
+    }
+
+    public String getWalletName() {
+        return walletName;
+    }
+
+    public void setWalletName(String walletName) {
+        this.walletName = walletName;
+    }
+
+    public String getWalletCurrency() {
+        return walletCurrency;
+    }
+
+    public void setWalletCurrency(String walletCurrency) {
+        this.walletCurrency = walletCurrency;
     }
 }
