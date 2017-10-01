@@ -54,6 +54,8 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
 
         if (fromWallet != null) {
             tvFromWalletName.setText(fromWallet.getName());
+        } else {
+            tvFromWalletName.setText("пополнение");
         }
         tvToWalletName.setText(toWallet.getName());
         tvToWalletCurrency.setText(toWallet.getCurrency());

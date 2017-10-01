@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.garbage.R;
+import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 import com.example.garbage.wallet_operation.WalletOperation;
 import com.example.garbage.wallet_operation.WalletOperationAdapter;
 import com.example.garbage.wallet_operation.WalletOperationsDao;
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 public class EditWalletActivity extends AppCompatActivity {
+
+    public static int ADD_WALLET_OPERATION_ACTIVITY_CODE = 1;
 
     private Wallet wallet;
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
@@ -72,7 +75,26 @@ public class EditWalletActivity extends AppCompatActivity {
         Button bDeleteWallet = (Button) findViewById(R.id.b_delete_wallet);
         bDeleteWallet.setOnClickListener(getDeleteOnClickListener(this));
 
+        Button bAddWallet = (Button) findViewById(R.id.b_add_wallet);
+        bAddWallet.setOnClickListener(getAddOnClickListener(this));
+
         initRecyclerViewWalletOperation();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (data == null) {
+            return;
+        } else if (ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            refreshWallet();
+            initRecyclerViewWalletOperation();
+        }
+    }
+
+    private void refreshWallet() {
+        wallet = new Wallet(wallet.getId(), this);
+        etWalletAmount.setText(String.valueOf(wallet.getAmount()));
+        walletOperations = walletOperationsDao.getWalletOperations(wallet.getId());
     }
 
     private void initRecyclerViewWalletOperation() {
@@ -110,6 +132,17 @@ public class EditWalletActivity extends AppCompatActivity {
                     setResult(RESULT_OK, new Intent());
                     finish();
                 }
+            }
+        };
+    }
+
+    private View.OnClickListener getAddOnClickListener(final Context context) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, AddWalletOperationActivity.class);
+                intent.putExtra("toWallet", wallet);
+                startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
             }
         };
     }

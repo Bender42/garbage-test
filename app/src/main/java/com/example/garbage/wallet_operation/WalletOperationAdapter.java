@@ -57,7 +57,7 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyyг. HH:mm");
         holder.time.setText(formatDate.format(calendar.getTime()));
         if (isAddition) {
-            if (select.getFromWallet() == null) {
+            if (select.getFromWallet() == 0) {
                 holder.description.setText(
                         String.format(
                                 "пополнение %s",
