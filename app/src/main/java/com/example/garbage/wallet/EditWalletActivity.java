@@ -16,14 +16,18 @@ import com.example.garbage.wallet_operation.WalletOperation;
 import com.example.garbage.wallet_operation.WalletOperationAdapter;
 import com.example.garbage.wallet_operation.WalletOperationsDao;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class EditWalletActivity extends AppCompatActivity {
 
     private Wallet wallet;
+    private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
     private List<WalletOperation> walletOperations = new LinkedList<>();
 
+    private WalletsDao walletsDao;
     private WalletOperationsDao walletOperationsDao;
 
     private EditText etWalletName;
@@ -46,6 +50,9 @@ public class EditWalletActivity extends AppCompatActivity {
             finish();
         }
         wallet = new Wallet(walletId, this);
+
+        walletsDao = new WalletsDao(this);
+        wallets = walletsDao.getWallets();
 
         walletOperationsDao = new WalletOperationsDao(this);
         walletOperations = walletOperationsDao.getWalletOperations(walletId);
@@ -75,7 +82,7 @@ public class EditWalletActivity extends AppCompatActivity {
         layoutManagerWalletOperations = new LinearLayoutManager(this);
         rvWalletOperations.setLayoutManager(layoutManagerWalletOperations);
 
-        adapterWalletOperations = new WalletOperationAdapter(walletOperations, wallet);
+        adapterWalletOperations = new WalletOperationAdapter(walletOperations, wallet, wallets);
         rvWalletOperations.setAdapter(adapterWalletOperations);
     }
 

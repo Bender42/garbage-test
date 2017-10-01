@@ -14,17 +14,21 @@ import com.example.garbage.wallet.Wallet;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperationAdapter.ViewHolder> {
 
     private List<WalletOperation> walletOperations;
     private Wallet currentWallet;
+    private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
 
-    public WalletOperationAdapter(List<WalletOperation> walletOperations, Wallet currentWallet) {
+    public WalletOperationAdapter(List<WalletOperation> walletOperations, Wallet currentWallet, Map<Integer, Wallet> wallets) {
         this.walletOperations = walletOperations;
         this.currentWallet = currentWallet;
+        this.wallets = wallets;
     }
 
     @Override
@@ -38,16 +42,40 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         WalletOperation select = walletOperations.get(position);
         holder.name.setText(select.getName());
         String amount = String.valueOf(select.getAmount());
-        if (Objects.equals(select.getFromWallet(), currentWallet.getId())) {
-            holder.amount.setText(String.format("- %s", amount));
-            holder.amount.setTextColor(Color.RED);
+        boolean isAddition = Objects.equals(select.getToWallet(), currentWallet.getId());
+        int textColor = isAddition ? 0xFF009900 : 0xFFe60000;
+        if (isAddition) {
+            holder.amount.setText(String.format("+ %s", amount));
         } else {
-            holder.amount.setText(amount);
+            holder.amount.setText(String.format("- %s", amount));
         }
+        holder.amount.setTextColor(textColor);
+        holder.currency.setText(currentWallet.getCurrency());
+        holder.currency.setTextColor(textColor);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(select.getTime());
         SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyyг. HH:mm");
         holder.time.setText(formatDate.format(calendar.getTime()));
+        if (isAddition) {
+            if (select.getFromWallet() == null) {
+                holder.description.setText(
+                        String.format(
+                                "пополнение %s",
+                                currentWallet.getName()));
+            } else {
+                holder.description.setText(
+                        String.format(
+                                "из %s в %s",
+                                wallets.get(select.getFromWallet()).getName(),
+                                wallets.get(select.getToWallet()).getName()));
+            }
+        } else {
+            holder.description.setText(
+                    String.format(
+                            "из %s в %s",
+                            wallets.get(select.getFromWallet()).getName(),
+                            wallets.get(select.getToWallet()).getName()));
+        }
     }
 
     @Override
@@ -60,12 +88,16 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         public TextView name;
         public TextView amount;
         public TextView time;
+        public TextView description;
+        public TextView currency;
 
         public ViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_name);
             amount = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_amount);
-            time = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_time);
+            time = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_date_time);
+            description = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_description);
+            currency = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_currency);
         }
     }
 }

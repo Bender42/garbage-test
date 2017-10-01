@@ -7,12 +7,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.garbage.R;
+import com.example.garbage.wallet.Wallet;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.ViewHolder> {
 
     private List<CostItem> costItems;
+    private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
 
     public CostItemsAdapter(List<CostItem> costItems) {
         this.costItems = costItems;
@@ -29,8 +35,14 @@ public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.View
         CostItem select = costItems.get(position);
         holder.name.setText(select.getName());
         holder.amount.setText(String.valueOf(select.getAmount()));
+        holder.amount.setTextColor(0xFFe60000);
         holder.walletCurrency.setText(select.getWalletCurrency());
-        holder.walletName.setText(select.getWalletName());
+        holder.walletCurrency.setTextColor(0xFFe60000);
+        holder.walletName.setText(String.format("оплата из %s", select.getWalletName()));
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(select.getTime());
+        SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyyг. HH:mm");
+        holder.time.setText(formatDate.format(calendar.getTime()));
     }
 
     @Override
@@ -44,13 +56,15 @@ public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.View
         public TextView amount;
         public TextView walletCurrency;
         public TextView walletName;
+        public TextView time;
 
         public ViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.tv_cost_item_view_name);
             amount = (TextView) itemView.findViewById(R.id.tv_cost_item_view_amount);
-            walletCurrency = (TextView) itemView.findViewById(R.id.tv_cost_item_view_wallet_currency);
+            walletCurrency = (TextView) itemView.findViewById(R.id.tv_cost_item_view_currency);
             walletName = (TextView) itemView.findViewById(R.id.tv_cost_item_view_wallet_name);
+            time = (TextView) itemView.findViewById(R.id.tv_cost_item_view_date_time);
         }
     }
 }
