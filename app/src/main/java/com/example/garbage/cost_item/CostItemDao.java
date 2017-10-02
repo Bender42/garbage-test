@@ -29,7 +29,7 @@ public class CostItemDao {
                 new String[] {String.valueOf(expenditureId)},
                 null,
                 null,
-                null);
+                String.format("%s DESC", CostItem.TIME_COLUMN_NAME));
         if (cursor.moveToFirst()) {
             do {
                 CostItem costItem = new CostItem(cursor);
@@ -37,6 +37,27 @@ public class CostItemDao {
                 costItem.setWalletName(wallets.get(costItemWalletId).getName());
                 costItem.setWalletCurrency(wallets.get(costItemWalletId).getCurrency());
                 costItems.add(costItem);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        dbHelper.close();
+        return costItems;
+    }
+
+    public List<CostItem> getCostItems(Wallet wallet) {
+        List<CostItem> costItems = new LinkedList<>();
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(
+                CostItem.COST_ITEM_TABLE_NAME,
+                null,
+                "wallet = ?",
+                new String[] {String.valueOf(wallet.getId())},
+                null,
+                null,
+                String.format("%s DESC", CostItem.TIME_COLUMN_NAME));
+        if (cursor.moveToFirst()) {
+            do {
+                costItems.add(new CostItem(cursor));
             } while (cursor.moveToNext());
         }
         cursor.close();

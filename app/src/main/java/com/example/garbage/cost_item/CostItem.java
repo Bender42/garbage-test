@@ -5,15 +5,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.garbage.IWalletOperation;
 import com.example.garbage.SQLiteHelper;
+import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
 import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
-public class CostItem {
+public class CostItem implements IWalletOperation {
 
     public static String COST_ITEM_TABLE_NAME = "cost_item";
     public static String ID_COLUMN_NAME = "id";
@@ -25,10 +28,10 @@ public class CostItem {
 
     private Integer id;
     private String name;
+    private BigDecimal amount;
     private Integer wallet;
     private Integer expenditure;
     private Long time;
-    private BigDecimal amount;
 
     private String walletName;
     private String walletCurrency;
@@ -39,16 +42,16 @@ public class CostItem {
     public CostItem(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
         int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
+        int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
         int walletIndex = cursor.getColumnIndex(WALLET_COLUMN_NAME);
         int expenditureIndex = cursor.getColumnIndex(EXPENDITURE_COLUMN_NAME);
         int timeIndex = cursor.getColumnIndex(TIME_COLUMN_NAME);
-        int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(nameIndex);
+        this.amount = convertIntToAmount(cursor.getInt(amountIndex));
         this.wallet = cursor.getInt(walletIndex);
         this.expenditure = cursor.getInt(expenditureIndex);
         this.time = cursor.getLong(timeIndex);
-        this.amount = convertIntToAmount(cursor.getInt(amountIndex));
     }
 
     public boolean isComplete() {
@@ -87,6 +90,17 @@ public class CostItem {
         }
     }
 
+    @Override
+    public boolean isAddingAmount() {
+        return false;
+    }
+
+    @Override
+    public String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures) {
+        return String.format("оплата %s", expenditures.get(getExpenditure()).getName());
+    }
+
+    @Override
     public Integer getId() {
         return id;
     }
@@ -95,6 +109,7 @@ public class CostItem {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -119,6 +134,7 @@ public class CostItem {
         this.expenditure = expenditure;
     }
 
+    @Override
     public Long getTime() {
         return time;
     }
@@ -127,6 +143,7 @@ public class CostItem {
         this.time = time;
     }
 
+    @Override
     public BigDecimal getAmount() {
         return amount;
     }

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.garbage.SQLiteHelper;
+import com.example.garbage.cost_item.CostItem;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class WalletOperationsDao {
                 new String[] {String.valueOf(walletId), String.valueOf(walletId)},
                 null,
                 null,
-                null);
+                String.format("%s DESC", WalletOperation.TIME_COLUMN_NAME));
         if (cursor.moveToFirst()) {
             do {
                 WalletOperation walletOperation = new WalletOperation(cursor);

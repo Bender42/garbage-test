@@ -34,7 +34,7 @@ public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.View
     public void onBindViewHolder(ViewHolder holder, int position) {
         CostItem select = costItems.get(position);
         holder.name.setText(select.getName());
-        holder.amount.setText(String.valueOf(select.getAmount()));
+        holder.amount.setText(String.format("- %s", select.getAmount()));
         holder.amount.setTextColor(0xFFe60000);
         holder.walletCurrency.setText(select.getWalletCurrency());
         holder.walletCurrency.setTextColor(0xFFe60000);

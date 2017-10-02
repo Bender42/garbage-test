@@ -11,12 +11,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.garbage.IWalletOperation;
 import com.example.garbage.R;
+import com.example.garbage.cost_item.CostItem;
+import com.example.garbage.cost_item.CostItemDao;
+import com.example.garbage.expenditure.Expenditure;
+import com.example.garbage.expenditure.ExpenditureDao;
 import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 import com.example.garbage.wallet_operation.WalletOperation;
 import com.example.garbage.wallet_operation.WalletOperationAdapter;
 import com.example.garbage.wallet_operation.WalletOperationsDao;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,10 +35,14 @@ public class EditWalletActivity extends AppCompatActivity {
 
     private Wallet wallet;
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
+    private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
     private List<WalletOperation> walletOperations = new LinkedList<>();
+    private List<CostItem> costItems = new LinkedList<>();
 
     private WalletsDao walletsDao;
+    private ExpenditureDao expenditureDao;
     private WalletOperationsDao walletOperationsDao;
+    private CostItemDao costItemDao;
 
     private EditText etWalletName;
     private EditText etWalletAmount;
@@ -57,8 +68,14 @@ public class EditWalletActivity extends AppCompatActivity {
         walletsDao = new WalletsDao(this);
         wallets = walletsDao.getWallets();
 
+        expenditureDao = new ExpenditureDao(this);
+        expenditures = expenditureDao.getExpenditures();
+
         walletOperationsDao = new WalletOperationsDao(this);
         walletOperations = walletOperationsDao.getWalletOperations(walletId);
+
+        costItemDao = new CostItemDao(this);
+        costItems = costItemDao.getCostItems(wallet);
 
         etWalletName = (EditText) findViewById(R.id.et_edit_wallet_name);
         etWalletName.setText(wallet.getName());
@@ -104,8 +121,22 @@ public class EditWalletActivity extends AppCompatActivity {
         layoutManagerWalletOperations = new LinearLayoutManager(this);
         rvWalletOperations.setLayoutManager(layoutManagerWalletOperations);
 
-        adapterWalletOperations = new WalletOperationAdapter(walletOperations, wallet, wallets);
+        List<IWalletOperation> operations = getSortOperations();
+        adapterWalletOperations = new WalletOperationAdapter(operations, wallet, wallets, expenditures);
         rvWalletOperations.setAdapter(adapterWalletOperations);
+    }
+
+    private List<IWalletOperation> getSortOperations() {
+        List<IWalletOperation> operations = new LinkedList<>();
+        operations.addAll(walletOperations);
+        operations.addAll(costItems);
+        Collections.sort(operations, new Comparator<IWalletOperation>() {
+            @Override
+            public int compare(IWalletOperation o1, IWalletOperation o2) {
+                return o2.getTime().compareTo(o1.getTime());
+            }
+        });
+        return operations;
     }
 
     private View.OnClickListener getUpdateOnClickListener(final Context context) {

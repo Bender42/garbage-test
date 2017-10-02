@@ -1,15 +1,14 @@
 package com.example.garbage.wallet_operation;
 
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.support.annotation.ColorInt;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.garbage.IWalletOperation;
 import com.example.garbage.R;
+import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
 
 import java.text.SimpleDateFormat;
@@ -17,18 +16,22 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperationAdapter.ViewHolder> {
 
-    private List<WalletOperation> walletOperations;
+    private List<IWalletOperation> operations;
     private Wallet currentWallet;
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
+    private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
 
-    public WalletOperationAdapter(List<WalletOperation> walletOperations, Wallet currentWallet, Map<Integer, Wallet> wallets) {
-        this.walletOperations = walletOperations;
+    public WalletOperationAdapter(List<IWalletOperation> operations,
+                                  Wallet currentWallet,
+                                  Map<Integer, Wallet> wallets,
+                                  Map<Integer, Expenditure> expenditures) {
+        this.operations = operations;
         this.currentWallet = currentWallet;
         this.wallets = wallets;
+        this.expenditures = expenditures;
     }
 
     @Override
@@ -39,15 +42,14 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        WalletOperation select = walletOperations.get(position);
+        IWalletOperation select = operations.get(position);
         holder.name.setText(select.getName());
-        String amount = String.valueOf(select.getAmount());
-        boolean isAddition = Objects.equals(select.getToWallet(), currentWallet.getId());
-        int textColor = isAddition ? 0xFF009900 : 0xFFe60000;
-        if (isAddition) {
-            holder.amount.setText(String.format("+ %s", amount));
+        boolean isAddingAmount = select.isAddingAmount();
+        int textColor = isAddingAmount ? 0xFF009900 : 0xFFe60000;
+        if (isAddingAmount) {
+            holder.amount.setText(String.format("+ %s", select.getAmount()));
         } else {
-            holder.amount.setText(String.format("- %s", amount));
+            holder.amount.setText(String.format("- %s", select.getAmount()));
         }
         holder.amount.setTextColor(textColor);
         holder.currency.setText(currentWallet.getCurrency());
@@ -56,31 +58,12 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         calendar.setTimeInMillis(select.getTime());
         SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyyг. HH:mm");
         holder.time.setText(formatDate.format(calendar.getTime()));
-        if (isAddition) {
-            if (select.getFromWallet() == 0) {
-                holder.description.setText(
-                        String.format(
-                                "пополнение %s",
-                                currentWallet.getName()));
-            } else {
-                holder.description.setText(
-                        String.format(
-                                "из %s в %s",
-                                wallets.get(select.getFromWallet()).getName(),
-                                wallets.get(select.getToWallet()).getName()));
-            }
-        } else {
-            holder.description.setText(
-                    String.format(
-                            "из %s в %s",
-                            wallets.get(select.getFromWallet()).getName(),
-                            wallets.get(select.getToWallet()).getName()));
-        }
+        holder.description.setText(select.getDescription(currentWallet, wallets, expenditures));
     }
 
     @Override
     public int getItemCount() {
-        return walletOperations.size();
+        return operations.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

@@ -4,17 +4,20 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Build;
 
+import com.example.garbage.IWalletOperation;
 import com.example.garbage.SQLiteHelper;
+import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
 import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
-public class WalletOperation {
+public class WalletOperation implements IWalletOperation {
 
     public static String WALLET_OPERATION_TABLE_NAME = "wallet_operation";
     public static String ID_COLUMN_NAME = "id";
@@ -25,10 +28,10 @@ public class WalletOperation {
     public static String TIME_COLUMN_NAME = "time";
 
     private Integer id;
+    private String name;
+    private BigDecimal amount;
     private Integer fromWallet;
     private Integer toWallet;
-    private BigDecimal amount;
-    private String name;
     private Long time;
 
     public WalletOperation() {
@@ -36,16 +39,16 @@ public class WalletOperation {
 
     public WalletOperation(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
+        int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
+        int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
         int fromWalletIndex = cursor.getColumnIndex(FROM_WALLET_COLUMN_NAME);
         int toWalletIndex = cursor.getColumnIndex(TO_WALLET_COLUMN_NAME);
-        int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
-        int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
         int timeIndex = cursor.getColumnIndex(TIME_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
+        this.name = cursor.getString(nameIndex);
+        this.amount = convertIntToAmount(cursor.getInt(amountIndex));
         this.fromWallet = cursor.getInt(fromWalletIndex);
         this.toWallet = cursor.getInt(toWalletIndex);
-        this.amount = convertIntToAmount(cursor.getInt(amountIndex));
-        this.name = cursor.getString(nameIndex);
         this.time = cursor.getLong(timeIndex);
     }
 
@@ -95,6 +98,33 @@ public class WalletOperation {
         }
     }
 
+    @Override
+    public boolean isAddingAmount() {
+        return Objects.equals(getToWallet(), getId());
+    }
+
+    @Override
+    public String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures) {
+        if (isAddingAmount()) {
+            if (getFromWallet() == 0) {
+                return String.format(
+                        "пополнение %s",
+                        currentWallet.getName());
+            } else {
+                return String.format(
+                        "из %s в %s",
+                        wallets.get(getFromWallet()).getName(),
+                        currentWallet.getName());
+            }
+        } else {
+            return String.format(
+                    "из %s в %s",
+                    currentWallet.getName(),
+                    wallets.get(getToWallet()).getName());
+        }
+    }
+
+    @Override
     public Integer getId() {
         return id;
     }
@@ -119,6 +149,7 @@ public class WalletOperation {
         this.toWallet = toWallet;
     }
 
+    @Override
     public BigDecimal getAmount() {
         return amount;
     }
@@ -131,6 +162,7 @@ public class WalletOperation {
         this.amount = amount != null && amount.length() != 0 ? new BigDecimal(amount) : null;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -139,6 +171,7 @@ public class WalletOperation {
         this.name = name;
     }
 
+    @Override
     public Long getTime() {
         return time;
     }

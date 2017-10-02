@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
 import android.support.design.widget.NavigationView;
@@ -29,6 +27,7 @@ import com.example.garbage.cost_item.AddCostItemActivity;
 import com.example.garbage.expenditure.AddExpenditureActivity;
 import com.example.garbage.expenditure.EditExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
+import com.example.garbage.expenditure.ExpenditureDao;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.EditWalletActivity;
 import com.example.garbage.wallet.Wallet;
@@ -37,8 +36,6 @@ import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -57,9 +54,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static int EXPENDITURE_COLUMN_COUNT = 5;
 
     private WalletsDao walletsDao;
+    private ExpenditureDao expenditureDao;
 
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
-    private List<Expenditure> expenditures = new LinkedList<>();
+    private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
 
     private Wallet selectedWallet = new Wallet();
     private Expenditure selectedExpenditure = new Expenditure();
@@ -118,7 +116,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         walletsDao = new WalletsDao(this);
         wallets = walletsDao.getWallets();
-        expenditures = getExpenditures();
+
+        expenditureDao = new ExpenditureDao(this);
+        expenditures = expenditureDao.getExpenditures();
 
         createShortcuts();
         initNavigation();
@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             redrawWallets();
         } else if ((ADD_EXPENDITURE_ACTIVITY_CODE == requestCode || EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
-            expenditures = getExpenditures();
+            expenditures = expenditureDao.getExpenditures();
             redrawExpenditures();
         } else if ((ADD_COST_ITEM_ACTIVITY_CODE == requestCode || ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
@@ -308,26 +308,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return intent;
     }
 
-    private List<Expenditure> getExpenditures() {
-        List<Expenditure> expenditures = new LinkedList<>();
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
-        if (cursor.moveToFirst()) {
-            do {
-                expenditures.add(new Expenditure(cursor));
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        dbHelper.close();
-        return expenditures;
-    }
-
     private void redrawExpenditures() {
         layoutExpenditures.removeAllViews();
         LinearLayout linearLayout = getNewLinearLayoutExpenditure();
         layoutExpenditures.addView(linearLayout);
         int index = 0;
-        for (Expenditure expenditure : expenditures) {
+        for (Expenditure expenditure : expenditures.values()) {
             if (index % EXPENDITURE_COLUMN_COUNT == 0) {
                 linearLayout = getNewLinearLayoutExpenditure();
                 layoutExpenditures.addView(linearLayout);
