@@ -91,7 +91,7 @@ public class CostItem implements IWalletOperation {
     }
 
     @Override
-    public boolean isAddingAmount() {
+    public boolean isAddingAmount(Wallet currentWallet) {
         return false;
     }
 

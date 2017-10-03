@@ -16,7 +16,7 @@ public interface IWalletOperation {
 
     Long getTime();
 
-    boolean isAddingAmount();
+    boolean isAddingAmount(Wallet currentWallet);
 
     String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures);
 }

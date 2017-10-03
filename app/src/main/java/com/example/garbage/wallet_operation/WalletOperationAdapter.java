@@ -44,7 +44,7 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
     public void onBindViewHolder(ViewHolder holder, int position) {
         IWalletOperation select = operations.get(position);
         holder.name.setText(select.getName());
-        boolean isAddingAmount = select.isAddingAmount();
+        boolean isAddingAmount = select.isAddingAmount(currentWallet);
         int textColor = isAddingAmount ? 0xFF009900 : 0xFFe60000;
         if (isAddingAmount) {
             holder.amount.setText(String.format("+ %s", select.getAmount()));

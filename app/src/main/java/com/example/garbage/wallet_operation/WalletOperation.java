@@ -99,28 +99,20 @@ public class WalletOperation implements IWalletOperation {
     }
 
     @Override
-    public boolean isAddingAmount() {
-        return Objects.equals(getToWallet(), getId());
+    public boolean isAddingAmount(Wallet currentWallet) {
+        return Objects.equals(getToWallet(), currentWallet.getId());
     }
 
     @Override
     public String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures) {
-        if (isAddingAmount()) {
+        if (isAddingAmount(currentWallet)) {
             if (getFromWallet() == 0) {
-                return String.format(
-                        "пополнение %s",
-                        currentWallet.getName());
+                return "пополнение";
             } else {
-                return String.format(
-                        "из %s в %s",
-                        wallets.get(getFromWallet()).getName(),
-                        currentWallet.getName());
+                return String.format("перевод из %s", wallets.get(getFromWallet()).getName());
             }
         } else {
-            return String.format(
-                    "из %s в %s",
-                    currentWallet.getName(),
-                    wallets.get(getToWallet()).getName());
+            return String.format("перевод в %s", wallets.get(getToWallet()).getName());
         }
     }
 
