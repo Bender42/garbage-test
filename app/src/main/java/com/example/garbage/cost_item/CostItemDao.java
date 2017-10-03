@@ -44,14 +44,14 @@ public class CostItemDao {
         return costItems;
     }
 
-    public List<CostItem> getCostItems(Wallet wallet) {
+    public List<CostItem> getCostItems(int walletId) {
         List<CostItem> costItems = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(
                 CostItem.COST_ITEM_TABLE_NAME,
                 null,
                 "wallet = ?",
-                new String[] {String.valueOf(wallet.getId())},
+                new String[] {String.valueOf(walletId)},
                 null,
                 null,
                 String.format("%s DESC", CostItem.TIME_COLUMN_NAME));

@@ -36,11 +36,8 @@ public class EditWalletActivity extends AppCompatActivity {
     private Wallet wallet;
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
     private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
-    private List<WalletOperation> walletOperations = new LinkedList<>();
-    private List<CostItem> costItems = new LinkedList<>();
+    private List<IWalletOperation> operations = new LinkedList<>();
 
-    private WalletsDao walletsDao;
-    private ExpenditureDao expenditureDao;
     private WalletOperationsDao walletOperationsDao;
     private CostItemDao costItemDao;
 
@@ -49,7 +46,6 @@ public class EditWalletActivity extends AppCompatActivity {
 
     private RecyclerView rvWalletOperations;
     private RecyclerView.Adapter adapterWalletOperations;
-    private RecyclerView.LayoutManager layoutManagerWalletOperations;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,17 +61,19 @@ public class EditWalletActivity extends AppCompatActivity {
         }
         wallet = new Wallet(walletId, this);
 
-        walletsDao = new WalletsDao(this);
+        WalletsDao walletsDao = new WalletsDao(this);
         wallets = walletsDao.getWallets();
 
-        expenditureDao = new ExpenditureDao(this);
+        ExpenditureDao expenditureDao = new ExpenditureDao(this);
         expenditures = expenditureDao.getExpenditures();
 
         walletOperationsDao = new WalletOperationsDao(this);
-        walletOperations = walletOperationsDao.getWalletOperations(walletId);
-
         costItemDao = new CostItemDao(this);
-        costItems = costItemDao.getCostItems(wallet);
+
+        operations = getSortOperations(
+                walletOperationsDao.getWalletOperations(walletId),
+                costItemDao.getCostItems(wallet.getId())
+        );
 
         etWalletName = (EditText) findViewById(R.id.et_edit_wallet_name);
         etWalletName.setText(wallet.getName());
@@ -100,33 +98,38 @@ public class EditWalletActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
-            return;
-        } else if (ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            refreshWallet();
-            initRecyclerViewWalletOperation();
+        if (data != null) {
+            if (ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+                refreshDataAndAdapter();
+            }
         }
     }
 
-    private void refreshWallet() {
+    private void refreshDataAndAdapter() {
         wallet = new Wallet(wallet.getId(), this);
         etWalletAmount.setText(String.valueOf(wallet.getAmount()));
-        walletOperations = walletOperationsDao.getWalletOperations(wallet.getId());
+        operations = getSortOperations(
+                walletOperationsDao.getWalletOperations(wallet.getId()),
+                costItemDao.getCostItems(wallet.getId())
+        );
+        adapterWalletOperations = new WalletOperationAdapter(operations, wallet, wallets, expenditures);
+        rvWalletOperations.setAdapter(adapterWalletOperations);
     }
 
     private void initRecyclerViewWalletOperation() {
         rvWalletOperations = (RecyclerView) findViewById(R.id.rv_wallet_wallet_operation_list);
         rvWalletOperations.setHasFixedSize(false);
 
-        layoutManagerWalletOperations = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager layoutManagerWalletOperations = new LinearLayoutManager(this);
         rvWalletOperations.setLayoutManager(layoutManagerWalletOperations);
 
-        List<IWalletOperation> operations = getSortOperations();
         adapterWalletOperations = new WalletOperationAdapter(operations, wallet, wallets, expenditures);
         rvWalletOperations.setAdapter(adapterWalletOperations);
     }
 
-    private List<IWalletOperation> getSortOperations() {
+    private List<IWalletOperation> getSortOperations(List<WalletOperation> walletOperations,
+                                                     List<CostItem> costItems
+    ) {
         List<IWalletOperation> operations = new LinkedList<>();
         operations.addAll(walletOperations);
         operations.addAll(costItems);
