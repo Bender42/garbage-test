@@ -1,9 +1,13 @@
 package com.example.garbage.wallet_operation;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.garbage.IWalletOperation;
@@ -24,6 +28,8 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
     private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
 
+    private Context context;
+
     public WalletOperationAdapter(List<IWalletOperation> operations,
                                   Wallet currentWallet,
                                   Map<Integer, Wallet> wallets,
@@ -37,11 +43,12 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.wallet_operation_view, parent, false);
+        context = parent.getContext();
         return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         IWalletOperation select = operations.get(position);
         holder.name.setText(select.getName());
         boolean isAddingAmount = select.isAddingAmount(currentWallet);
@@ -59,6 +66,32 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyyг. HH:mm");
         holder.time.setText(formatDate.format(calendar.getTime()));
         holder.description.setText(select.getDescription(currentWallet, wallets, expenditures));
+        holder.menu.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+                menu.add(0, 1, 0, "Удалить").setOnMenuItemClickListener(getOnMenuItemClickListener(position));
+            }
+        });
+    }
+
+
+
+    private MenuItem.OnMenuItemClickListener getOnMenuItemClickListener(final int position) {
+        return new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case 1:
+                        IWalletOperation walletOperation = operations.get(position);
+                        walletOperation.delete(context, wallets);
+                        operations.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, getItemCount());
+                        return true;
+                }
+                return false;
+            }
+        };
     }
 
     @Override
@@ -73,6 +106,7 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         public TextView time;
         public TextView description;
         public TextView currency;
+        public ImageButton menu;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -81,6 +115,7 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
             time = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_date_time);
             description = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_description);
             currency = (TextView) itemView.findViewById(R.id.tv_wallet_oper_view_currency);
+            menu = (ImageButton) itemView.findViewById(R.id.tv_wallet_oper_view_menu);
         }
     }
 }

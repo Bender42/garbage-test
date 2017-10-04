@@ -30,8 +30,8 @@ public class WalletOperation implements IWalletOperation {
     private Integer id;
     private String name;
     private BigDecimal amount;
-    private Integer fromWallet;
-    private Integer toWallet;
+    private Integer fromWalletId;
+    private Integer toWalletId;
     private Long time;
 
     public WalletOperation() {
@@ -47,19 +47,19 @@ public class WalletOperation implements IWalletOperation {
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(nameIndex);
         this.amount = convertIntToAmount(cursor.getInt(amountIndex));
-        this.fromWallet = cursor.getInt(fromWalletIndex);
-        this.toWallet = cursor.getInt(toWalletIndex);
+        this.fromWalletId = cursor.getInt(fromWalletIndex);
+        this.toWalletId = cursor.getInt(toWalletIndex);
         this.time = cursor.getLong(timeIndex);
     }
 
     public boolean isComplete() {
         return amount != null && BigDecimal.ZERO.compareTo(amount) != 1 &&
-                toWallet != null && time != null;
+                toWalletId != null && time != null;
     }
 
     /**
      * TODO добавить поддержку транзакций
-     * Создаем запись элемента операции между кошельками, либо над однтм кошельком (пополнение)
+     * Создаем запись элемента операции между кошельками, либо над одним кошельком (пополнение)
      * с последующим увеличением баланса кошелька пополнения
      * и уменьшением баланса кошелька списания (если таковой имеется)
      *
@@ -72,24 +72,60 @@ public class WalletOperation implements IWalletOperation {
             SQLiteDatabase database = dbHelper.getWritableDatabase();
 
             ContentValues walletOperationContentValues = new ContentValues();
-            walletOperationContentValues.put(FROM_WALLET_COLUMN_NAME, this.fromWallet);
-            walletOperationContentValues.put(TO_WALLET_COLUMN_NAME, this.toWallet);
+            walletOperationContentValues.put(FROM_WALLET_COLUMN_NAME, this.fromWalletId);
+            walletOperationContentValues.put(TO_WALLET_COLUMN_NAME, this.toWalletId);
             walletOperationContentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
             walletOperationContentValues.put(NAME_COLUMN_NAME, name);
             walletOperationContentValues.put(TIME_COLUMN_NAME, time);
             database.insert(WALLET_OPERATION_TABLE_NAME, null, walletOperationContentValues);
 
-            if (fromWallet != null) {
+            if (fromWalletId != null) {
                 ContentValues fromWalletContentValues = new ContentValues();
                 BigDecimal fromWalletResultAmount = fromWallet.getAmount().subtract(amount);
                 fromWalletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(fromWalletResultAmount));
-                database.update(Wallet.WALLET_TABLE_NAME, fromWalletContentValues, "id = ?", new String[]{String.valueOf(fromWallet.getId())});
+                database.update(Wallet.WALLET_TABLE_NAME, fromWalletContentValues, "id = ?", new String[]{String.valueOf(fromWalletId)});
             }
 
             ContentValues toWalletContentValues = new ContentValues();
             BigDecimal toWalletResultAmount = toWallet.getAmount().add(amount);
             toWalletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(toWalletResultAmount));
-            database.update(Wallet.WALLET_TABLE_NAME, toWalletContentValues, "id = ?", new String[]{String.valueOf(toWallet.getId())});
+            database.update(Wallet.WALLET_TABLE_NAME, toWalletContentValues, "id = ?", new String[]{String.valueOf(toWalletId)});
+
+            dbHelper.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * TODO добавить поддержку транзакций
+     * Удаляем запись с элементом операции между кошельками
+     * Увеличиваем баланс кошелька с которого списывались средства (если таковой был)
+     * Уменьшение баланса с кошелька на который перечислялись средства
+     *
+     * @param wallets список всех кошельков
+     */
+    public boolean delete(Context context, Map<Integer, Wallet> wallets) {
+        try {
+            SQLiteHelper dbHelper = new SQLiteHelper(context);
+            SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+            database.delete(WALLET_OPERATION_TABLE_NAME, "id = ?", new String[]{String.valueOf(getId())});
+
+            if (fromWalletId != 0) {
+                ContentValues fromWalletContentValues = new ContentValues();
+                Wallet fromWallet = wallets.get(fromWalletId);
+                BigDecimal fromWalletResultAmount = fromWallet.getAmount().add(getAmount());
+                fromWalletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(fromWalletResultAmount));
+                database.update(Wallet.WALLET_TABLE_NAME, fromWalletContentValues, "id = ?", new String[]{String.valueOf(fromWalletId)});
+            }
+
+            ContentValues toWalletContentValues = new ContentValues();
+            Wallet toWallet = wallets.get(toWalletId);
+            BigDecimal toWalletResultAmount = toWallet.getAmount().subtract(amount);
+            toWalletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(toWalletResultAmount));
+            database.update(Wallet.WALLET_TABLE_NAME, toWalletContentValues, "id = ?", new String[]{String.valueOf(toWalletId)});
 
             dbHelper.close();
             return true;
@@ -100,19 +136,19 @@ public class WalletOperation implements IWalletOperation {
 
     @Override
     public boolean isAddingAmount(Wallet currentWallet) {
-        return Objects.equals(getToWallet(), currentWallet.getId());
+        return Objects.equals(getToWalletId(), currentWallet.getId());
     }
 
     @Override
     public String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures) {
         if (isAddingAmount(currentWallet)) {
-            if (getFromWallet() == 0) {
+            if (getFromWalletId() == 0) {
                 return "пополнение";
             } else {
-                return String.format("перевод из %s", wallets.get(getFromWallet()).getName());
+                return String.format("перевод из %s", wallets.get(getFromWalletId()).getName());
             }
         } else {
-            return String.format("перевод в %s", wallets.get(getToWallet()).getName());
+            return String.format("перевод в %s", wallets.get(getToWalletId()).getName());
         }
     }
 
@@ -125,20 +161,20 @@ public class WalletOperation implements IWalletOperation {
         this.id = id;
     }
 
-    public Integer getFromWallet() {
-        return fromWallet;
+    public Integer getFromWalletId() {
+        return fromWalletId;
     }
 
-    public void setFromWallet(Integer fromWallet) {
-        this.fromWallet = fromWallet;
+    public void setFromWalletId(Integer fromWalletId) {
+        this.fromWalletId = fromWalletId;
     }
 
-    public Integer getToWallet() {
-        return toWallet;
+    public Integer getToWalletId() {
+        return toWalletId;
     }
 
-    public void setToWallet(Integer toWallet) {
-        this.toWallet = toWallet;
+    public void setToWalletId(Integer toWalletId) {
+        this.toWalletId = toWalletId;
     }
 
     @Override

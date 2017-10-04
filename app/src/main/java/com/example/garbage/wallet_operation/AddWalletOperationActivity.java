@@ -110,9 +110,9 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
             @Override
             public void onClick(View v) {
                 if (fromWallet != null) {
-                    walletOperation.setFromWallet(fromWallet.getId());
+                    walletOperation.setFromWalletId(fromWallet.getId());
                 }
-                walletOperation.setToWallet(toWallet.getId());
+                walletOperation.setToWalletId(toWallet.getId());
                 walletOperation.setAmount(etWalletOperationAmount.getText().toString());
                 walletOperation.setName(etWalletOperationName.getText().toString());
                 walletOperation.setTime(walletOperationDateTime);

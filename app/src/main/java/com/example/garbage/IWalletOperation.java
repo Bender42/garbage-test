@@ -1,5 +1,7 @@
 package com.example.garbage;
 
+import android.content.Context;
+
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
 
@@ -15,6 +17,8 @@ public interface IWalletOperation {
     BigDecimal getAmount();
 
     Long getTime();
+
+    boolean delete(Context context, Map<Integer, Wallet> wallets);
 
     boolean isAddingAmount(Wallet currentWallet);
 

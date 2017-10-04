@@ -63,7 +63,7 @@ public class CostItem implements IWalletOperation {
      * TODO добавить поддержку транзакций
      * Создаем запись элемента расхода с последующим уменьшением баланса кошелька списания
      *
-     * @param targetWallet  кошелек списания
+     * @param targetWallet кошелек списания
      */
     public boolean post(Context context, Wallet targetWallet) {
         try {
@@ -82,6 +82,33 @@ public class CostItem implements IWalletOperation {
             BigDecimal walletResultAmount = targetWallet.getAmount().subtract(amount);
             walletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(walletResultAmount));
             database.update(Wallet.WALLET_TABLE_NAME, walletContentValues, "id = ?", new String[]{String.valueOf(targetWallet.getId())});
+
+            dbHelper.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * TODO добавить поддержку транзакций
+     * Удаляем запись с элементом расхода с последующим увеличением
+     * баланса кошелька с которого происходило списание
+     *
+     * @param wallets список всех кошельков
+     */
+    public boolean delete(Context context, Map<Integer, Wallet> wallets) {
+        try {
+            SQLiteHelper dbHelper = new SQLiteHelper(context);
+            SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+            database.delete(COST_ITEM_TABLE_NAME, "id = ?", new String[]{String.valueOf(getId())});
+
+            ContentValues walletContentValues = new ContentValues();
+            Wallet fromWallet = wallets.get(getId());
+            BigDecimal walletResultAmount = fromWallet.getAmount().add(getAmount());
+            walletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(walletResultAmount));
+            database.update(Wallet.WALLET_TABLE_NAME, walletContentValues, "id = ?", new String[]{String.valueOf(fromWallet.getId())});
 
             dbHelper.close();
             return true;
