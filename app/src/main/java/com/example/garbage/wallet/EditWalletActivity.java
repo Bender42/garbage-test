@@ -62,7 +62,7 @@ public class EditWalletActivity extends AppCompatActivity {
         wallet = new Wallet(walletId, this);
 
         WalletsDao walletsDao = new WalletsDao(this);
-        wallets = walletsDao.getWallets();
+        wallets = walletsDao.getAllWallets();
 
         ExpenditureDao expenditureDao = new ExpenditureDao(this);
         expenditures = expenditureDao.getExpenditures();
@@ -162,7 +162,7 @@ public class EditWalletActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (wallet.delete(context) == 1) {
+                if (wallet.archive(context) == 1) {
                     setResult(RESULT_OK, new Intent());
                     finish();
                 }

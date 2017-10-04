@@ -107,8 +107,8 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
             @Override
             public void onClick(View v) {
                 costItem.setName(etCostItemName.getText().toString());
-                costItem.setWallet(selectedWallet.getId());
-                costItem.setExpenditure(selectedExpenditure.getId());
+                costItem.setWalletId(selectedWallet.getId());
+                costItem.setExpenditureId(selectedExpenditure.getId());
                 costItem.setTime(costItemDateTime);
                 costItem.setAmount(etCostItemAmount.getText().toString());
                 if (costItem.isComplete()) {

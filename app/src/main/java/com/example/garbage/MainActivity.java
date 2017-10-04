@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         dbHelper = new SQLiteHelper(this);
 
         walletsDao = new WalletsDao(this);
-        wallets = walletsDao.getWallets();
+        wallets = walletsDao.getActiveWallets();
 
         expenditureDao = new ExpenditureDao(this);
         expenditures = expenditureDao.getExpenditures();
@@ -149,22 +149,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             redrawMainActivity();
         } else if ((ADD_WALLET_ACTIVITY_CODE == requestCode || EDIT_WALLET_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
-            wallets = walletsDao.getWallets();
-            redrawWallets();
+            redrawMainActivity();
         } else if ((ADD_EXPENDITURE_ACTIVITY_CODE == requestCode || EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
-            expenditures = expenditureDao.getExpenditures();
-            redrawExpenditures();
+            redrawMainActivity();
         } else if ((ADD_COST_ITEM_ACTIVITY_CODE == requestCode || ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
             redrawMainActivity();
         } else if (SQL_ACTIVITY_CODE == requestCode) {
-            wallets = walletsDao.getWallets();
-            redrawWallets();
+            redrawMainActivity();
         }
     }
 
     private void redrawMainActivity() {
+        wallets = walletsDao.getActiveWallets();
+        expenditures = expenditureDao.getExpenditures();
         selectedWallet.updateWallet(null);
         selectedExpenditure.updateExpenditure(null);
         redrawFromTo();

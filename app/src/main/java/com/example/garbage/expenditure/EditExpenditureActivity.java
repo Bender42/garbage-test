@@ -52,7 +52,7 @@ public class EditExpenditureActivity extends AppCompatActivity {
         expenditure = new Expenditure(expenditureId, this);
 
         walletsDao = new WalletsDao(this);
-        wallets = walletsDao.getWallets();
+        wallets = walletsDao.getAllWallets();
 
         costItemDao = new CostItemDao(this);
         costItems = costItemDao.getCostItems(expenditureId, wallets);//TODO Добавить ограничение по времени. Берем объекты только текущего месяца.

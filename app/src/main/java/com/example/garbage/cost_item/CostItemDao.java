@@ -33,7 +33,7 @@ public class CostItemDao {
         if (cursor.moveToFirst()) {
             do {
                 CostItem costItem = new CostItem(cursor);
-                Integer costItemWalletId = costItem.getWallet();
+                Integer costItemWalletId = costItem.getWalletId();
                 costItem.setWalletName(wallets.get(costItemWalletId).getName());
                 costItem.setWalletCurrency(wallets.get(costItemWalletId).getCurrency());
                 costItems.add(costItem);

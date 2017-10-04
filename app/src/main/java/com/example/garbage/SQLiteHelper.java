@@ -17,13 +17,14 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s varchar(255), %s integer, %s varchar(10), %s integer);",
+        db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s varchar(255), %s integer, %s varchar(10), %s integer, %s varchar(255));",
                 Wallet.WALLET_TABLE_NAME,
                 Wallet.ID_COLUMN_NAME,
                 Wallet.NAME_COLUMN_NAME,
                 Wallet.ICON_COLUMN_NAME,
                 Wallet.CURRENCY_COLUMN_NAME,
-                Wallet.AMOUNT_COLUMN_NAME));
+                Wallet.AMOUNT_COLUMN_NAME,
+                Wallet.STATUS_COLUMN_NAME));
         db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s varchar(255), %s integer, %s integer, %s long, %s integer);",
                 CostItem.COST_ITEM_TABLE_NAME,
                 CostItem.ID_COLUMN_NAME,

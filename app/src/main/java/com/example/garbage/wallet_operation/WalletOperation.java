@@ -106,6 +106,7 @@ public class WalletOperation implements IWalletOperation {
      *
      * @param wallets список всех кошельков
      */
+    @Override
     public boolean delete(Context context, Map<Integer, Wallet> wallets) {
         try {
             SQLiteHelper dbHelper = new SQLiteHelper(context);

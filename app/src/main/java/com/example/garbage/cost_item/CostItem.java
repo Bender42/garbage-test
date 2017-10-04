@@ -29,8 +29,8 @@ public class CostItem implements IWalletOperation {
     private Integer id;
     private String name;
     private BigDecimal amount;
-    private Integer wallet;
-    private Integer expenditure;
+    private Integer walletId;
+    private Integer expenditureId;
     private Long time;
 
     private String walletName;
@@ -43,20 +43,20 @@ public class CostItem implements IWalletOperation {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
         int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
         int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
-        int walletIndex = cursor.getColumnIndex(WALLET_COLUMN_NAME);
-        int expenditureIndex = cursor.getColumnIndex(EXPENDITURE_COLUMN_NAME);
+        int walletIdIndex = cursor.getColumnIndex(WALLET_COLUMN_NAME);
+        int expenditureIdIndex = cursor.getColumnIndex(EXPENDITURE_COLUMN_NAME);
         int timeIndex = cursor.getColumnIndex(TIME_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(nameIndex);
         this.amount = convertIntToAmount(cursor.getInt(amountIndex));
-        this.wallet = cursor.getInt(walletIndex);
-        this.expenditure = cursor.getInt(expenditureIndex);
+        this.walletId = cursor.getInt(walletIdIndex);
+        this.expenditureId = cursor.getInt(expenditureIdIndex);
         this.time = cursor.getLong(timeIndex);
     }
 
     public boolean isComplete() {
         return amount != null && BigDecimal.ZERO.compareTo(amount) != 1 &&
-                wallet != null && expenditure != null && time != null;
+                walletId != null && expenditureId != null && time != null;
     }
 
     /**
@@ -72,8 +72,8 @@ public class CostItem implements IWalletOperation {
 
             ContentValues costItemContentValues = new ContentValues();
             costItemContentValues.put(NAME_COLUMN_NAME, name);
-            costItemContentValues.put(WALLET_COLUMN_NAME, wallet);
-            costItemContentValues.put(EXPENDITURE_COLUMN_NAME, expenditure);
+            costItemContentValues.put(WALLET_COLUMN_NAME, walletId);
+            costItemContentValues.put(EXPENDITURE_COLUMN_NAME, expenditureId);
             costItemContentValues.put(TIME_COLUMN_NAME, time);
             costItemContentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
             database.insert(COST_ITEM_TABLE_NAME, null, costItemContentValues);
@@ -97,18 +97,19 @@ public class CostItem implements IWalletOperation {
      *
      * @param wallets список всех кошельков
      */
+    @Override
     public boolean delete(Context context, Map<Integer, Wallet> wallets) {
         try {
             SQLiteHelper dbHelper = new SQLiteHelper(context);
             SQLiteDatabase database = dbHelper.getWritableDatabase();
 
-            database.delete(COST_ITEM_TABLE_NAME, "id = ?", new String[]{String.valueOf(getId())});
+            database.delete(COST_ITEM_TABLE_NAME, "id = ?", new String[]{String.valueOf(id)});
 
             ContentValues walletContentValues = new ContentValues();
-            Wallet fromWallet = wallets.get(getId());
-            BigDecimal walletResultAmount = fromWallet.getAmount().add(getAmount());
+            Wallet fromWallet = wallets.get(walletId);
+            BigDecimal walletResultAmount = fromWallet.getAmount().add(amount);
             walletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(walletResultAmount));
-            database.update(Wallet.WALLET_TABLE_NAME, walletContentValues, "id = ?", new String[]{String.valueOf(fromWallet.getId())});
+            database.update(Wallet.WALLET_TABLE_NAME, walletContentValues, "id = ?", new String[]{String.valueOf(walletId)});
 
             dbHelper.close();
             return true;
@@ -124,7 +125,7 @@ public class CostItem implements IWalletOperation {
 
     @Override
     public String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures) {
-        return String.format("оплата %s", expenditures.get(getExpenditure()).getName());
+        return String.format("оплата %s", expenditures.get(getExpenditureId()).getName());
     }
 
     @Override
@@ -145,20 +146,20 @@ public class CostItem implements IWalletOperation {
         this.name = name;
     }
 
-    public Integer getWallet() {
-        return wallet;
+    public Integer getWalletId() {
+        return walletId;
     }
 
-    public void setWallet(Integer wallet) {
-        this.wallet = wallet;
+    public void setWalletId(Integer walletId) {
+        this.walletId = walletId;
     }
 
-    public Integer getExpenditure() {
-        return expenditure;
+    public Integer getExpenditureId() {
+        return expenditureId;
     }
 
-    public void setExpenditure(Integer expenditure) {
-        this.expenditure = expenditure;
+    public void setExpenditureId(Integer expenditureId) {
+        this.expenditureId = expenditureId;
     }
 
     @Override
