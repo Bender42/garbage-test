@@ -21,8 +21,8 @@ public class WalletOperation implements IWalletOperation {
 
     public static String WALLET_OPERATION_TABLE_NAME = "wallet_operation";
     public static String ID_COLUMN_NAME = "id";
-    public static String FROM_WALLET_COLUMN_NAME = "from_wallet";
-    public static String TO_WALLET_COLUMN_NAME = "to_wallet";
+    public static String FROM_WALLET_ID_COLUMN_NAME = "from_wallet_id";
+    public static String TO_WALLET_ID_COLUMN_NAME = "to_wallet_id";
     public static String AMOUNT_COLUMN_NAME = "amount";
     public static String NAME_COLUMN_NAME = "name";
     public static String TIME_COLUMN_NAME = "time";
@@ -41,14 +41,14 @@ public class WalletOperation implements IWalletOperation {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
         int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
         int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
-        int fromWalletIndex = cursor.getColumnIndex(FROM_WALLET_COLUMN_NAME);
-        int toWalletIndex = cursor.getColumnIndex(TO_WALLET_COLUMN_NAME);
+        int fromWalletIdIndex = cursor.getColumnIndex(FROM_WALLET_ID_COLUMN_NAME);
+        int toWalletIdIndex = cursor.getColumnIndex(TO_WALLET_ID_COLUMN_NAME);
         int timeIndex = cursor.getColumnIndex(TIME_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(nameIndex);
         this.amount = convertIntToAmount(cursor.getInt(amountIndex));
-        this.fromWalletId = cursor.getInt(fromWalletIndex);
-        this.toWalletId = cursor.getInt(toWalletIndex);
+        this.fromWalletId = cursor.getInt(fromWalletIdIndex);
+        this.toWalletId = cursor.getInt(toWalletIdIndex);
         this.time = cursor.getLong(timeIndex);
     }
 
@@ -72,8 +72,8 @@ public class WalletOperation implements IWalletOperation {
             SQLiteDatabase database = dbHelper.getWritableDatabase();
 
             ContentValues walletOperationContentValues = new ContentValues();
-            walletOperationContentValues.put(FROM_WALLET_COLUMN_NAME, this.fromWalletId);
-            walletOperationContentValues.put(TO_WALLET_COLUMN_NAME, this.toWalletId);
+            walletOperationContentValues.put(FROM_WALLET_ID_COLUMN_NAME, this.fromWalletId);
+            walletOperationContentValues.put(TO_WALLET_ID_COLUMN_NAME, this.toWalletId);
             walletOperationContentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
             walletOperationContentValues.put(NAME_COLUMN_NAME, name);
             walletOperationContentValues.put(TIME_COLUMN_NAME, time);

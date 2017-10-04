@@ -29,8 +29,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
                 CostItem.COST_ITEM_TABLE_NAME,
                 CostItem.ID_COLUMN_NAME,
                 CostItem.NAME_COLUMN_NAME,
-                CostItem.WALLET_COLUMN_NAME,
-                CostItem.EXPENDITURE_COLUMN_NAME,
+                CostItem.WALLET_ID_COLUMN_NAME,
+                CostItem.EXPENDITURE_ID_COLUMN_NAME,
                 CostItem.TIME_COLUMN_NAME,
                 CostItem.AMOUNT_COLUMN_NAME));
         db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s varchar(255), %s integer);",
@@ -41,8 +41,8 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(String.format("create table %s (%s integer primary key autoincrement, %s integer, %s integer, %s integer, %s varchar(255), %s long);",
                 WalletOperation.WALLET_OPERATION_TABLE_NAME,
                 WalletOperation.ID_COLUMN_NAME,
-                WalletOperation.FROM_WALLET_COLUMN_NAME,
-                WalletOperation.TO_WALLET_COLUMN_NAME,
+                WalletOperation.FROM_WALLET_ID_COLUMN_NAME,
+                WalletOperation.TO_WALLET_ID_COLUMN_NAME,
                 WalletOperation.AMOUNT_COLUMN_NAME,
                 WalletOperation.NAME_COLUMN_NAME,
                 WalletOperation.TIME_COLUMN_NAME));

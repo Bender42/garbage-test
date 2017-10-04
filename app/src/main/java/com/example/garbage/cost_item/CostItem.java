@@ -21,8 +21,8 @@ public class CostItem implements IWalletOperation {
     public static String COST_ITEM_TABLE_NAME = "cost_item";
     public static String ID_COLUMN_NAME = "id";
     public static String NAME_COLUMN_NAME = "name";
-    public static String WALLET_COLUMN_NAME = "wallet";
-    public static String EXPENDITURE_COLUMN_NAME = "expenditure";
+    public static String WALLET_ID_COLUMN_NAME = "wallet_id";
+    public static String EXPENDITURE_ID_COLUMN_NAME = "expenditure_id";
     public static String TIME_COLUMN_NAME = "time";
     public static String AMOUNT_COLUMN_NAME = "amount";
 
@@ -43,8 +43,8 @@ public class CostItem implements IWalletOperation {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
         int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
         int amountIndex = cursor.getColumnIndex(AMOUNT_COLUMN_NAME);
-        int walletIdIndex = cursor.getColumnIndex(WALLET_COLUMN_NAME);
-        int expenditureIdIndex = cursor.getColumnIndex(EXPENDITURE_COLUMN_NAME);
+        int walletIdIndex = cursor.getColumnIndex(WALLET_ID_COLUMN_NAME);
+        int expenditureIdIndex = cursor.getColumnIndex(EXPENDITURE_ID_COLUMN_NAME);
         int timeIndex = cursor.getColumnIndex(TIME_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(nameIndex);
@@ -72,8 +72,8 @@ public class CostItem implements IWalletOperation {
 
             ContentValues costItemContentValues = new ContentValues();
             costItemContentValues.put(NAME_COLUMN_NAME, name);
-            costItemContentValues.put(WALLET_COLUMN_NAME, walletId);
-            costItemContentValues.put(EXPENDITURE_COLUMN_NAME, expenditureId);
+            costItemContentValues.put(WALLET_ID_COLUMN_NAME, walletId);
+            costItemContentValues.put(EXPENDITURE_ID_COLUMN_NAME, expenditureId);
             costItemContentValues.put(TIME_COLUMN_NAME, time);
             costItemContentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
             database.insert(COST_ITEM_TABLE_NAME, null, costItemContentValues);
