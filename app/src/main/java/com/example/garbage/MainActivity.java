@@ -77,8 +77,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinearLayout layoutWallets;
     private LinearLayout layoutExpenditures;
 
-    private TextView fromWallet;
-    private TextView toExpenditure;
+    private TextView tvIncomeItem;
+    private TextView tvWallet;
+    private TextView tvExpenditure;
 
     @Override
     public void onBackPressed() {
@@ -145,36 +146,44 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         redrawIncomeItems();
         redrawWallets();
         redrawExpenditures();
-        //redrawFromTo();
     }
 
     private void initFromTo() {
-        fromWallet = (TextView) findViewById(R.id.tv_main_from_wallet);
-        toExpenditure = (TextView) findViewById(R.id.tv_main_to_expenditure);
+        tvIncomeItem = (TextView) findViewById(R.id.tv_main_income_item);
+        tvWallet = (TextView) findViewById(R.id.tv_main_wallet);
+        tvExpenditure = (TextView) findViewById(R.id.tv_main_expenditure);
     }
 
-    /*private void redrawFromTo() {
-        fromWallet.setText(selectedWallet.getName());
-        toExpenditure.setText(selectedExpenditure.getName());
-    }*/
+    private void redrawFromTo() {
+        tvIncomeItem.setText(selectedIncomeItem.getName());
+        tvWallet.setText(selectedWallet.getName());
+        tvExpenditure.setText(selectedExpenditure.getName());
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
+            cleanFromTo();
             redrawWalletsAndExpenditures();
         } else if ((ADD_WALLET_ACTIVITY_CODE == requestCode || EDIT_WALLET_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
+            cleanFromTo();
             redrawWalletsAndExpenditures();
         } else if ((ADD_EXPENDITURE_ACTIVITY_CODE == requestCode || EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
+            cleanFromTo();
             redrawWalletsAndExpenditures();
         } else if ((ADD_COST_ITEM_ACTIVITY_CODE == requestCode || ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
+            cleanFromTo();
             redrawWalletsAndExpenditures();
         } else if (SQL_ACTIVITY_CODE == requestCode) {
+            cleanFromTo();
             redrawWalletsAndExpenditures();
         } else if ((ADD_INCOME_ITEM_ACTIVITY_CODE == requestCode || EDIT_INCOME_ITEM_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
+            cleanFromTo();
+            incomeItems = incomeItemsDao.getActiveIncomeItems();
             redrawIncomeItems();
         }
     }
@@ -183,10 +192,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         selectedIncomeItem.updateIncomeItem(null);
         selectedWallet.updateWallet(null);
         selectedExpenditure.updateExpenditure(null);
-        //redrawFromTo();
+        redrawFromTo();
     }
 
     private void redrawWalletsAndExpenditures() {
+        wallets = walletsDao.getActiveWallets();
+        expenditures = expenditureDao.getExpenditures();
         redrawWallets();
         redrawExpenditures();
     }
@@ -254,7 +265,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void redrawIncomeItems() {
-        incomeItems = incomeItemsDao.getActiveIncomeItems();
         layoutIncomeItems.removeAllViews();
         for (IncomeItem incomeItem : incomeItems) {
             ImageButton incomeItemButton = incomeItem.draw(layoutIncomeItems, this);
@@ -275,20 +285,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
     }
 
-    private View.OnClickListener getOnIncomeItemClickListener(final IncomeItem incomeItem) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectedIncomeItem.updateIncomeItem(incomeItem);
-                if (selectedWallet.getId() != null) {
-
-                }
-            }
-        };
-    }
-
     private void redrawWallets() {
-        wallets = walletsDao.getActiveWallets();
         layoutWallets.removeAllViews();
         for (Wallet wallet : wallets.values()) {
             ImageButton walletButton = wallet.draw(layoutWallets, this);
@@ -309,14 +306,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         };
     }
 
+    private View.OnClickListener getOnIncomeItemClickListener(final IncomeItem incomeItem) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedWallet.getId() != null) {
+                    if (!Objects.equals(selectedWallet.getCurrency(), incomeItem.getCurrency())) {
+                        Toast.makeText(v.getContext(), getResources().getString(R.string.not_equal_currencies), Toast.LENGTH_LONG).show();
+                    } else {
+                        selectedIncomeItem.updateIncomeItem(incomeItem);
+                        Intent intent = getIncomeItemIntent(v.getContext(), incomeItem, selectedWallet);
+                        startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
+                    }
+                } else if (selectedIncomeItem.getId() != null) {
+                    if (selectedIncomeItem.getId().equals(incomeItem.getId())) {
+                        selectedIncomeItem.updateIncomeItem(null);
+                    } else {
+                        selectedIncomeItem.updateIncomeItem(incomeItem);
+                    }
+                } else {
+                    selectedIncomeItem.updateIncomeItem(incomeItem);
+                }
+                selectedExpenditure.updateExpenditure(null);
+                redrawFromTo();
+            }
+        };
+    }
+
     private View.OnClickListener getOnWalletClickListener(final Wallet wallet) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (selectedExpenditure.getId() != null) {
                     selectedWallet.updateWallet(wallet);
-                    Intent intent = getCostItemIntent(v.getContext());
+                    Intent intent = getCostItemIntent(v.getContext(), wallet, selectedExpenditure);
                     startActivityForResult(intent, ADD_COST_ITEM_ACTIVITY_CODE);
+                } else if (selectedIncomeItem.getId() != null) {
+                    if (!Objects.equals(wallet.getCurrency(), selectedIncomeItem.getCurrency())) {
+                        Toast.makeText(v.getContext(), getResources().getString(R.string.not_equal_currencies), Toast.LENGTH_LONG).show();
+                    } else {
+                        selectedWallet.updateWallet(wallet);
+                        Intent intent = getIncomeItemIntent(v.getContext(), selectedIncomeItem, wallet);
+                        startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
+                    }
                 } else if (selectedWallet.getId() != null) {
                     if (selectedWallet.getId().equals(wallet.getId())) {
                         selectedWallet.updateWallet(null);
@@ -324,15 +356,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (!Objects.equals(selectedWallet.getCurrency(), wallet.getCurrency())) {
                             Toast.makeText(v.getContext(), getResources().getString(R.string.not_equal_currencies), Toast.LENGTH_LONG).show();
                         } else {
+                            selectedWallet.updateWallet(wallet);
                             Intent intent = getWalletOperationIntent(v.getContext(), selectedWallet, wallet);
                             startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
-                            selectedWallet.updateWallet(wallet);
                         }
                     }
                 } else {
                     selectedWallet.updateWallet(wallet);
                 }
-                //redrawFromTo();
+                redrawFromTo();
             }
         };
     }
@@ -343,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onClick(View v) {
                 if (selectedWallet.getId() != null) {
                     selectedExpenditure.updateExpenditure(expenditure);
-                    Intent intent = getCostItemIntent(v.getContext());
+                    Intent intent = getCostItemIntent(v.getContext(), selectedWallet, expenditure);
                     startActivityForResult(intent, ADD_COST_ITEM_ACTIVITY_CODE);
                 } else if (selectedExpenditure.getId() != null) {
                     if (selectedExpenditure.getId().equals(expenditure.getId())) {
@@ -354,15 +386,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     selectedExpenditure.updateExpenditure(expenditure);
                 }
-                //redrawFromTo();
+                selectedIncomeItem.updateIncomeItem(null);
+                redrawFromTo();
             }
         };
     }
 
-    private Intent getCostItemIntent(Context context) {
+    private Intent getCostItemIntent(Context context, Wallet wallet, Expenditure expenditure) {
         Intent intent = new Intent(context, AddCostItemActivity.class);
-        intent.putExtra("wallet", selectedWallet);
-        intent.putExtra("expenditure", selectedExpenditure);
+        intent.putExtra("wallet", wallet);
+        intent.putExtra("expenditure", expenditure);
+        return intent;
+    }
+
+    private Intent getIncomeItemIntent(Context context, Wallet fromIncomeItem, Wallet toWallet) {
+        Intent intent = new Intent(context, AddWalletOperationActivity.class);
+        intent.putExtra("fromIncomeItem", fromIncomeItem);
+        intent.putExtra("toWallet", toWallet);
         return intent;
     }
 
@@ -374,7 +414,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void redrawExpenditures() {
-        expenditures = expenditureDao.getExpenditures();
         layoutExpenditures.removeAllViews();
         LinearLayout linearLayout = getNewLinearLayoutExpenditure();
         layoutExpenditures.addView(linearLayout);
@@ -409,6 +448,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonNewButton.setImageDrawable(this.getResources().getDrawable(android.R.drawable.ic_menu_add, this.getTheme()));
         buttonNewButton.setMinimumHeight(convertDpsTpPixels(80, this));
         buttonNewButton.setMinimumWidth(convertDpsTpPixels(80, this));
+        buttonNewButton.setBackground(null);
         buttonNewButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

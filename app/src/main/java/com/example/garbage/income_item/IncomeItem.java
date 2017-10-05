@@ -24,11 +24,13 @@ public class IncomeItem extends Wallet {
         super(id, context);
     }
 
+    @Override
     public boolean isComplete() {
         return getName() != null && getName().length() > 0 &&
                 getCurrency() != null && getCurrency().length() > 0;
     }
 
+    @Override
     public boolean post(Context context) {
         SQLiteHelper dbHelper = new SQLiteHelper(context);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -50,12 +52,14 @@ public class IncomeItem extends Wallet {
             setAmount((BigDecimal) null);
             setCurrency(null);
             setIcon(null);
+            setIsIncomeItem(null);
         } else {
             setId(incomeItem.getId());
             setName(incomeItem.getName());
             setAmount(incomeItem.getAmount());
             setCurrency(incomeItem.getCurrency());
             setIcon(incomeItem.getIcon());
+            setIsIncomeItem(incomeItem.getIsIncomeItem());
         }
     }
 }

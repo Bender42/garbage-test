@@ -14,16 +14,20 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.R;
+import com.example.garbage.income_item.IncomeItem;
 import com.example.garbage.wallet.Wallet;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class AddWalletOperationActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private WalletOperation walletOperation = new WalletOperation();
-    Wallet fromWallet;
+    IncomeItem fromIncomeItem1;
+    IWallet fromWallet;
     Wallet toWallet;
 
     private EditText etWalletOperationName;
@@ -52,11 +56,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
         tvWalletOperationDate = (TextView) findViewById(R.id.tv_wallet_oper_date);
         tvWalletOperationTime = (TextView) findViewById(R.id.tv_wallet_oper_time);
 
-        if (fromWallet != null) {
-            tvFromWalletName.setText(fromWallet.getName());
-        } else {
-            tvFromWalletName.setText("пополнение");
-        }
+        tvFromWalletName.setText(fromWallet.getName());
         tvToWalletName.setText(toWallet.getName());
         tvToWalletCurrency.setText(toWallet.getCurrency());
 
@@ -117,7 +117,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 walletOperation.setName(etWalletOperationName.getText().toString());
                 walletOperation.setTime(walletOperationDateTime);
                 if (walletOperation.isComplete()) {
-                    if (fromWallet != null && walletOperation.getAmount().compareTo(fromWallet.getAmount()) == 1) {
+                    if (!fromWallet.isIncomeItem() && (walletOperation.getAmount().compareTo(fromWallet.getAmount()) == 1)) {
                         Toast.makeText(v.getContext(), getResources().getString(R.string.not_enough_amount_on_wallet), Toast.LENGTH_LONG).show();
                     } else {
                         if (walletOperation.post(context, fromWallet, toWallet)) {
@@ -134,9 +134,17 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
 
     private void initFromToWallets() {
         Intent intent = getIntent();
-        fromWallet = (Wallet) intent.getSerializableExtra("fromWallet");
+        Serializable serializableFromIncomeItem = intent.getSerializableExtra("fromIncomeItem");
+        if (serializableFromIncomeItem != null) {
+            fromWallet = (IncomeItem) intent.getSerializableExtra("fromIncomeItem");
+        } else {
+            Serializable serializableFromWallet = intent.getSerializableExtra("fromWallet");
+            if (serializableFromWallet != null) {
+                fromWallet = (Wallet) intent.getSerializableExtra("fromIncomeItem");
+            }
+        }
         toWallet = (Wallet) intent.getSerializableExtra("toWallet");
-        if (toWallet == null) {
+        if (fromWallet != null && toWallet == null) {
             //TODO Не работает, приложение падает
             setResult(RESULT_CANCELED, new Intent());
             finish();

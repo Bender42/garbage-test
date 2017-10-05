@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.IWalletOperation;
 import com.example.garbage.SQLiteHelper;
 import com.example.garbage.expenditure.Expenditure;
@@ -53,7 +54,9 @@ public class WalletOperation implements IWalletOperation {
     }
 
     public boolean isComplete() {
-        return amount != null && BigDecimal.ZERO.compareTo(amount) != 1 &&
+        return amount != null &&
+                BigDecimal.ZERO.compareTo(amount) != 1 &&
+                fromWalletId != null &&
                 toWalletId != null && time != null;
     }
 
@@ -66,20 +69,20 @@ public class WalletOperation implements IWalletOperation {
      * @param fromWallet кошелек с которого перечисляют средства
      * @param toWallet   кошлеек на который перечисляют средства
      */
-    public boolean post(Context context, Wallet fromWallet, Wallet toWallet) {
+    public boolean post(Context context, IWallet fromWallet, Wallet toWallet) {
         try {
             SQLiteHelper dbHelper = new SQLiteHelper(context);
             SQLiteDatabase database = dbHelper.getWritableDatabase();
 
             ContentValues walletOperationContentValues = new ContentValues();
-            walletOperationContentValues.put(FROM_WALLET_ID_COLUMN_NAME, this.fromWalletId);
-            walletOperationContentValues.put(TO_WALLET_ID_COLUMN_NAME, this.toWalletId);
+            walletOperationContentValues.put(FROM_WALLET_ID_COLUMN_NAME, fromWalletId);
+            walletOperationContentValues.put(TO_WALLET_ID_COLUMN_NAME, toWalletId);
             walletOperationContentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
             walletOperationContentValues.put(NAME_COLUMN_NAME, name);
             walletOperationContentValues.put(TIME_COLUMN_NAME, time);
             database.insert(WALLET_OPERATION_TABLE_NAME, null, walletOperationContentValues);
 
-            if (fromWalletId != null) {
+            if (!fromWallet.isIncomeItem()) {
                 ContentValues fromWalletContentValues = new ContentValues();
                 BigDecimal fromWalletResultAmount = fromWallet.getAmount().subtract(amount);
                 fromWalletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(fromWalletResultAmount));
@@ -107,23 +110,23 @@ public class WalletOperation implements IWalletOperation {
      * @param wallets список всех кошельков
      */
     @Override
-    public boolean delete(Context context, Map<Integer, Wallet> wallets) {
+    public boolean delete(Context context, Map<Integer, IWallet> wallets) {
         try {
             SQLiteHelper dbHelper = new SQLiteHelper(context);
             SQLiteDatabase database = dbHelper.getWritableDatabase();
 
             database.delete(WALLET_OPERATION_TABLE_NAME, "id = ?", new String[]{String.valueOf(getId())});
 
-            if (fromWalletId != 0) {
+            IWallet fromWallet = wallets.get(fromWalletId);
+            if (!fromWallet.isIncomeItem()) {
                 ContentValues fromWalletContentValues = new ContentValues();
-                Wallet fromWallet = wallets.get(fromWalletId);
                 BigDecimal fromWalletResultAmount = fromWallet.getAmount().add(getAmount());
                 fromWalletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(fromWalletResultAmount));
                 database.update(Wallet.WALLET_TABLE_NAME, fromWalletContentValues, "id = ?", new String[]{String.valueOf(fromWalletId)});
             }
 
             ContentValues toWalletContentValues = new ContentValues();
-            Wallet toWallet = wallets.get(toWalletId);
+            IWallet toWallet = wallets.get(toWalletId);
             BigDecimal toWalletResultAmount = toWallet.getAmount().subtract(amount);
             toWalletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(toWalletResultAmount));
             database.update(Wallet.WALLET_TABLE_NAME, toWalletContentValues, "id = ?", new String[]{String.valueOf(toWalletId)});
@@ -136,17 +139,24 @@ public class WalletOperation implements IWalletOperation {
     }
 
     @Override
-    public boolean isAddingAmount(Wallet currentWallet) {
+    public boolean isAddingAmount(IWallet currentWallet) {
+        if (currentWallet.isIncomeItem()) {
+            return true;
+        }
         return Objects.equals(getToWalletId(), currentWallet.getId());
     }
 
     @Override
-    public String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures) {
+    public String getDescription(IWallet currentWallet, Map<Integer, IWallet> wallets, Map<Integer, Expenditure> expenditures) {
         if (isAddingAmount(currentWallet)) {
-            if (getFromWalletId() == 0) {
-                return "пополнение";
+            if (currentWallet.isIncomeItem()) {
+                return String.format("пополнение %s", wallets.get(getToWalletId()).getName());
             } else {
-                return String.format("перевод из %s", wallets.get(getFromWalletId()).getName());
+                if (wallets.get(getFromWalletId()).isIncomeItem()) {
+                    return String.format("пополнение из %s", wallets.get(getFromWalletId()).getName());
+                } else {
+                    return String.format("перевод из %s", wallets.get(getFromWalletId()).getName());
+                }
             }
         } else {
             return String.format("перевод в %s", wallets.get(getToWalletId()).getName());

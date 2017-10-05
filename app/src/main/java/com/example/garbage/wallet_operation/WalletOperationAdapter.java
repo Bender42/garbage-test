@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.IWalletOperation;
 import com.example.garbage.R;
 import com.example.garbage.expenditure.Expenditure;
@@ -24,15 +25,15 @@ import java.util.Map;
 public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperationAdapter.ViewHolder> {
 
     private List<IWalletOperation> operations;
-    private Wallet currentWallet;
-    private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
+    private IWallet currentWallet;
+    private Map<Integer, IWallet> wallets = new LinkedHashMap<>();
     private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
 
     private Context context;
 
     public WalletOperationAdapter(List<IWalletOperation> operations,
                                   Wallet currentWallet,
-                                  Map<Integer, Wallet> wallets,
+                                  Map<Integer, IWallet> wallets,
                                   Map<Integer, Expenditure> expenditures) {
         this.operations = operations;
         this.currentWallet = currentWallet;
@@ -73,8 +74,6 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
             }
         });
     }
-
-
 
     private MenuItem.OnMenuItemClickListener getOnMenuItemClickListener(final int position) {
         return new MenuItem.OnMenuItemClickListener() {

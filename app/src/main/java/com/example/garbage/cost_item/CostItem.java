@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.IWalletOperation;
 import com.example.garbage.SQLiteHelper;
 import com.example.garbage.expenditure.Expenditure;
@@ -98,7 +99,7 @@ public class CostItem implements IWalletOperation {
      * @param wallets список всех кошельков
      */
     @Override
-    public boolean delete(Context context, Map<Integer, Wallet> wallets) {
+    public boolean delete(Context context, Map<Integer, IWallet> wallets) {
         try {
             SQLiteHelper dbHelper = new SQLiteHelper(context);
             SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -106,7 +107,7 @@ public class CostItem implements IWalletOperation {
             database.delete(COST_ITEM_TABLE_NAME, "id = ?", new String[]{String.valueOf(id)});
 
             ContentValues walletContentValues = new ContentValues();
-            Wallet fromWallet = wallets.get(walletId);
+            IWallet fromWallet = wallets.get(walletId);
             BigDecimal walletResultAmount = fromWallet.getAmount().add(amount);
             walletContentValues.put(Wallet.AMOUNT_COLUMN_NAME, convertAmountToInt(walletResultAmount));
             database.update(Wallet.WALLET_TABLE_NAME, walletContentValues, "id = ?", new String[]{String.valueOf(walletId)});
@@ -119,13 +120,19 @@ public class CostItem implements IWalletOperation {
     }
 
     @Override
-    public boolean isAddingAmount(Wallet currentWallet) {
+    public boolean isAddingAmount(IWallet currentWallet) {
         return false;
     }
 
     @Override
-    public String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures) {
-        return String.format("оплата %s", expenditures.get(getExpenditureId()).getName());
+    public String getDescription(IWallet currentWallet, Map<Integer, IWallet> wallets, Map<Integer, Expenditure> expenditures) {
+        if (expenditures != null) {
+            Expenditure expenditure = expenditures.get(getExpenditureId());
+            if (expenditure != null) {
+                return String.format("оплата %s", expenditures.get(getExpenditureId()).getName());
+            }
+        }
+        return null;
     }
 
     @Override

@@ -61,6 +61,7 @@
                 android:layout_width="79dp"
                 android:layout_height="79dp"
                 android:layout_weight="1"
+                android:background="@null"
                 android:text="@string/button_add_income_item"
                 app:srcCompat="@android:drawable/ic_menu_add" />
 
@@ -121,6 +122,7 @@
                 android:layout_width="79dp"
                 android:layout_height="79dp"
                 android:layout_weight="1"
+                android:background="@null"
                 android:text="@string/button_add_wallet"
                 app:srcCompat="@android:drawable/ic_menu_add" />
 
@@ -243,96 +245,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="79dp"
-                        app:srcCompat="@android:drawable/ic_menu_add" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/test_text_view_expenditure"
-                        android:textAlignment="center" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="79dp"
-                        app:srcCompat="@android:drawable/ic_menu_add" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/test_text_view_expenditure"
-                        android:textAlignment="center" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="79dp"
-                        app:srcCompat="@android:drawable/ic_menu_add" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/test_text_view_expenditure"
-                        android:textAlignment="center" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="79dp"
-                        app:srcCompat="@android:drawable/ic_menu_add" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/test_text_view_expenditure"
-                        android:textAlignment="center" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <ImageButton
-                        android:layout_width="79dp"
-                        android:layout_height="79dp"
-                        app:srcCompat="@android:drawable/ic_menu_add" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/test_text_view_expenditure"
-                        android:textAlignment="center" />
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
@@ -352,22 +264,38 @@
         android:layout_marginEnd="8dp">
 
         <TextView
-            android:id="@+id/tv_main_from_wallet"
-            android:layout_width="178dp"
+            android:id="@+id/tv_main_income_item"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:textAlignment="center"
             android:textSize="18sp" />
 
         <ImageView
             android:id="@+id/imageView2"
-            android:layout_width="40dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_menu_send" />
 
         <TextView
-            android:id="@+id/tv_main_to_expenditure"
-            android:layout_width="177dp"
+            android:id="@+id/tv_main_wallet"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_menu_send" />
+
+        <TextView
+            android:id="@+id/tv_main_expenditure"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:textAlignment="center"
             android:textSize="18sp" />
     </LinearLayout>

@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.IWalletOperation;
 import com.example.garbage.R;
 import com.example.garbage.cost_item.CostItem;
@@ -30,10 +31,8 @@ import java.util.Map;
 
 public class EditWalletActivity extends AppCompatActivity {
 
-    //public static int ADD_WALLET_OPERATION_ACTIVITY_CODE = 1;
-
     private Wallet wallet;
-    private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
+    private Map<Integer, IWallet> wallets = new LinkedHashMap<>();
     private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
     private List<IWalletOperation> operations = new LinkedList<>();
 
@@ -89,31 +88,8 @@ public class EditWalletActivity extends AppCompatActivity {
         Button bDeleteWallet = (Button) findViewById(R.id.b_delete_wallet);
         bDeleteWallet.setOnClickListener(getDeleteOnClickListener(this));
 
-        /*Button bAddWallet = (Button) findViewById(R.id.b_add_wallet);
-        bAddWallet.setOnClickListener(getAddOnClickListener(this));*/
-
         initRecyclerViewWalletOperation();
     }
-
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data != null) {
-            if (ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-                refreshDataAndAdapter();
-            }
-        }
-    }*/
-
-    /*private void refreshDataAndAdapter() {
-        wallet = new Wallet(wallet.getId(), this);
-        etWalletAmount.setText(String.valueOf(wallet.getAmount()));
-        operations = getSortOperations(
-                walletOperationsDao.getWalletOperations(wallet.getId()),
-                costItemDao.getCostItems(wallet.getId())
-        );
-        adapterWalletOperations = new WalletOperationAdapter(operations, wallet, wallets, expenditures);
-        rvWalletOperations.setAdapter(adapterWalletOperations);
-    }*/
 
     private void initRecyclerViewWalletOperation() {
         rvWalletOperations = (RecyclerView) findViewById(R.id.rv_wallet_wallet_operation_list);
@@ -168,15 +144,4 @@ public class EditWalletActivity extends AppCompatActivity {
             }
         };
     }
-
-    /*private View.OnClickListener getAddOnClickListener(final Context context) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, AddWalletOperationActivity.class);
-                intent.putExtra("toWallet", wallet);
-                startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
-            }
-        };
-    }*/
 }

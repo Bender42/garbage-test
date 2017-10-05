@@ -10,11 +10,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.R;
 import com.example.garbage.cost_item.CostItem;
 import com.example.garbage.cost_item.CostItemDao;
 import com.example.garbage.cost_item.CostItemsAdapter;
-import com.example.garbage.wallet.Wallet;
 import com.example.garbage.wallet.WalletsDao;
 
 import java.util.LinkedHashMap;
@@ -25,7 +25,7 @@ import java.util.Map;
 public class EditExpenditureActivity extends AppCompatActivity {
 
     private Expenditure expenditure;
-    private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
+    private Map<Integer, IWallet> wallets = new LinkedHashMap<>();
     private List<CostItem> costItems = new LinkedList<>();
 
     private WalletsDao walletsDao;

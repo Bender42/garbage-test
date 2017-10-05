@@ -4,8 +4,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.SQLiteHelper;
-import com.example.garbage.wallet.Wallet;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class CostItemDao {
         dbHelper = new SQLiteHelper(context);
     }
 
-    public List<CostItem> getCostItems(int expenditureId, Map<Integer, Wallet> wallets) {
+    public List<CostItem> getCostItems(int expenditureId, Map<Integer, IWallet> wallets) {
         List<CostItem> costItems = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(

@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.garbage.IWallet;
 import com.example.garbage.SQLiteHelper;
 
 import java.io.Serializable;
@@ -18,7 +19,7 @@ import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
 import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
 import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
-public class Wallet implements Serializable {
+public class Wallet implements IWallet, Serializable {
 
     public static String WALLET_TABLE_NAME = "wallet";
     public static String ID_COLUMN_NAME = "id";
@@ -75,11 +76,13 @@ public class Wallet implements Serializable {
             int currencyIndex = cursor.getColumnIndex(CURRENCY_COLUMN_NAME);
             int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
             int statusIndex = cursor.getColumnIndex(STATUS_COLUMN_NAME);
+            int isIncomeItem = cursor.getColumnIndex(IS_INCOME_ITEM_COLUMN_NAME);
             this.name = cursor.getString(nameIndex);
             this.amount = convertIntToAmount(cursor.getInt(amountIndex));
             this.currency = cursor.getString(currencyIndex);
             this.icon = cursor.getInt(iconIndex);
             this.status = cursor.getString(statusIndex);
+            this.isIncomeItem = cursor.getInt(isIncomeItem);
         }
         cursor.close();
         dbHelper.close();
@@ -173,12 +176,14 @@ public class Wallet implements Serializable {
             setAmount((BigDecimal) null);
             setCurrency(null);
             setIcon(null);
+            setIsIncomeItem(null);
         } else {
             setId(wallet.getId());
             setName(wallet.getName());
             setAmount(wallet.getAmount());
             setCurrency(wallet.getCurrency());
             setIcon(wallet.getIcon());
+            setIsIncomeItem(wallet.getIsIncomeItem());
         }
     }
 
@@ -232,6 +237,10 @@ public class Wallet implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Boolean isIncomeItem() {
+        return 1 == isIncomeItem;
     }
 
     public Integer getIsIncomeItem() {

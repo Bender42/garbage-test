@@ -3,7 +3,6 @@ package com.example.garbage;
 import android.content.Context;
 
 import com.example.garbage.expenditure.Expenditure;
-import com.example.garbage.wallet.Wallet;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -18,9 +17,9 @@ public interface IWalletOperation {
 
     Long getTime();
 
-    boolean delete(Context context, Map<Integer, Wallet> wallets);
+    boolean delete(Context context, Map<Integer, IWallet> wallets);
 
-    boolean isAddingAmount(Wallet currentWallet);
+    boolean isAddingAmount(IWallet currentWallet);
 
-    String getDescription(Wallet currentWallet, Map<Integer, Wallet> wallets, Map<Integer, Expenditure> expenditures);
+    String getDescription(IWallet currentWallet, Map<Integer, IWallet> wallets, Map<Integer, Expenditure> expenditures);
 }
