@@ -4,9 +4,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.garbage.IWallet;
@@ -146,25 +147,24 @@ public class Wallet implements IWallet, Serializable {
     }
 
     public ImageButton draw(ViewGroup view, Context context) {
-        LinearLayout linearLayout = new LinearLayout(context);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        FrameLayout frameLayout = new FrameLayout(context);
 
         ImageButton buttonNewButton = new ImageButton(context);
         buttonNewButton.setId(getId());
-        buttonNewButton.setImageDrawable(context.getResources().getDrawable(android.R.drawable.ic_menu_add, context.getTheme()));
         buttonNewButton.setMinimumHeight(convertDpsTpPixels(79, context));
         buttonNewButton.setMinimumWidth(convertDpsTpPixels(79, context));
-        linearLayout.addView(buttonNewButton);
+        frameLayout.addView(buttonNewButton);
 
-        TextView textView = new TextView(context);
-        textView.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT));
-        textView.setText(getName());
-        textView.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
-        linearLayout.addView(textView);
+        TextView textViewName = new TextView(context);
+        frameLayout.addView(textViewName);
+        textViewName.setMinimumHeight(convertDpsTpPixels(79, context));
+        textViewName.setMinimumWidth(convertDpsTpPixels(79, context));
+        textViewName.setText(getName());
+        textViewName.setGravity(Gravity.CENTER);
+        textViewName.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
+        textViewName.setTextSize(12);
 
-        view.addView(linearLayout);
+        view.addView(frameLayout);
 
         return buttonNewButton;
     }

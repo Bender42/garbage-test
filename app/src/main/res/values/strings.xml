@@ -38,6 +38,7 @@
     <string name="button_add_income_item">Добавить</string>
     <string name="test_text_view_wallet">Кошелек</string>
     <string name="test_text_view_income_item">Доход</string>
+    <string name="test_text_view_amount">10500.50</string>
     <string-array name="currency">
         <item>RUR</item>
         <item>USD</item>
