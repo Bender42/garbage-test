@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class WalletsDao {
 
-    private SQLiteHelper dbHelper;
+    private final SQLiteHelper dbHelper;
 
     public WalletsDao(Context context) {
         dbHelper = new SQLiteHelper(context);
@@ -20,7 +20,14 @@ public class WalletsDao {
     public Map<Integer, Wallet> getAllWallets() {
         Map<Integer, Wallet> wallets = new LinkedHashMap<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Cursor cursor = database.query(Wallet.WALLET_TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = database.query(
+                Wallet.WALLET_TABLE_NAME,
+                null,
+                String.format("%s = ?", Wallet.IS_INCOME_ITEM_COLUMN_NAME),
+                new String[] {"0"},
+                null,
+                null,
+                null);
         if (cursor.moveToFirst()) {
             do {
                 Wallet wallet = new Wallet(cursor);
@@ -38,8 +45,8 @@ public class WalletsDao {
         Cursor cursor = database.query(
                 Wallet.WALLET_TABLE_NAME,
                 null,
-                String.format("%s = ?", Wallet.STATUS_COLUMN_NAME),
-                new String[] {"active"},
+                String.format("%s = ? and %s = ?", Wallet.STATUS_COLUMN_NAME, Wallet.IS_INCOME_ITEM_COLUMN_NAME),
+                new String[] {"active", "0"},
                 null,
                 null,
                 null);

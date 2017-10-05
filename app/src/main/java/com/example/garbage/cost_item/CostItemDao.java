@@ -25,7 +25,7 @@ public class CostItemDao {
         Cursor cursor = database.query(
                 CostItem.COST_ITEM_TABLE_NAME,
                 null,
-                "expenditure = ?",
+                String.format("%s = ?", CostItem.EXPENDITURE_ID_COLUMN_NAME),
                 new String[] {String.valueOf(expenditureId)},
                 null,
                 null,
@@ -50,7 +50,7 @@ public class CostItemDao {
         Cursor cursor = database.query(
                 CostItem.COST_ITEM_TABLE_NAME,
                 null,
-                "wallet = ?",
+                String.format("%s = ?", CostItem.WALLET_ID_COLUMN_NAME),
                 new String[] {String.valueOf(walletId)},
                 null,
                 null,

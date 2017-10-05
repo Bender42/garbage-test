@@ -31,10 +31,13 @@
     <string name="USD">Доллар</string>
     <string name="EUR">Евро</string>
 
+    <string name="income_item_name">Название статьи дохода</string>
     <string name="wallet_name">Имя кошелька</string>
     <string name="wallet_amount">Баланс кошелька</string>
     <string name="button_add_wallet">Добавить</string>
+    <string name="button_add_income_item">Добавить</string>
     <string name="test_text_view_wallet">Кошелек</string>
+    <string name="test_text_view_income_item">Доход</string>
     <string-array name="currency">
         <item>RUR</item>
         <item>USD</item>

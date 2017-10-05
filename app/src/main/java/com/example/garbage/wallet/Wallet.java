@@ -14,6 +14,7 @@ import com.example.garbage.SQLiteHelper;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
 import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
 import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
@@ -26,6 +27,7 @@ public class Wallet implements Serializable {
     public static String CURRENCY_COLUMN_NAME = "currency";
     public static String ICON_COLUMN_NAME = "icon";
     public static String STATUS_COLUMN_NAME = "status";
+    public static String IS_INCOME_ITEM_COLUMN_NAME = "is_income_item";
 
     private Integer id;
     private String name;
@@ -33,6 +35,7 @@ public class Wallet implements Serializable {
     private String currency;
     private Integer icon;
     private String status;
+    private Integer isIncomeItem;
 
     public Wallet() {
     }
@@ -44,12 +47,14 @@ public class Wallet implements Serializable {
         int currencyIndex = cursor.getColumnIndex(CURRENCY_COLUMN_NAME);
         int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
         int statusIndex = cursor.getColumnIndex(STATUS_COLUMN_NAME);
+        int isIncomeItem = cursor.getColumnIndex(IS_INCOME_ITEM_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
         this.name = cursor.getString(nameIndex);
         this.amount = convertIntToAmount(cursor.getInt(amountIndex));
         this.currency = cursor.getString(currencyIndex);
         this.icon = cursor.getInt(iconIndex);
         this.status = cursor.getString(statusIndex);
+        this.isIncomeItem = cursor.getInt(isIncomeItem);
     }
 
     public Wallet(int id, Context context) {
@@ -59,7 +64,7 @@ public class Wallet implements Serializable {
         Cursor cursor = database.query(
                 WALLET_TABLE_NAME,
                 null,
-                "id = ?",
+                String.format("%s = ?", ID_COLUMN_NAME),
                 new String[] {String.valueOf(id)},
                 null,
                 null,
@@ -71,7 +76,7 @@ public class Wallet implements Serializable {
             int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
             int statusIndex = cursor.getColumnIndex(STATUS_COLUMN_NAME);
             this.name = cursor.getString(nameIndex);
-            this.amount = new BigDecimal(cursor.getInt(amountIndex)).divide(new BigDecimal(100)).setScale(2);
+            this.amount = convertIntToAmount(cursor.getInt(amountIndex));
             this.currency = cursor.getString(currencyIndex);
             this.icon = cursor.getInt(iconIndex);
             this.status = cursor.getString(statusIndex);
@@ -91,10 +96,11 @@ public class Wallet implements Serializable {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COLUMN_NAME, name);
-        contentValues.put(AMOUNT_COLUMN_NAME, amount.multiply(new BigDecimal(100)).intValue());
+        contentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
         contentValues.put(CURRENCY_COLUMN_NAME, currency);
         contentValues.put(ICON_COLUMN_NAME, icon);
         contentValues.put(STATUS_COLUMN_NAME, "active");
+        contentValues.put(IS_INCOME_ITEM_COLUMN_NAME, "0");
         database.insert(WALLET_TABLE_NAME, null, contentValues);
         dbHelper.close();
         return true;
@@ -107,8 +113,13 @@ public class Wallet implements Serializable {
         contentValues.put(NAME_COLUMN_NAME, name);
         contentValues.put(ICON_COLUMN_NAME, icon);
         contentValues.put(CURRENCY_COLUMN_NAME, currency);
-        contentValues.put(AMOUNT_COLUMN_NAME, amount.multiply(new BigDecimal(100)).intValue());
-        int countUpdate = database.update(WALLET_TABLE_NAME, contentValues, "id = ?", new String[] { String.valueOf(id) });
+        contentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
+        int countUpdate = database.update(
+                WALLET_TABLE_NAME,
+                contentValues,
+                String.format("%s = ?", ID_COLUMN_NAME),
+                new String[] { String.valueOf(id) }
+        );
         dbHelper.close();
         return countUpdate;
     }
@@ -221,5 +232,13 @@ public class Wallet implements Serializable {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Integer getIsIncomeItem() {
+        return isIncomeItem;
+    }
+
+    public void setIsIncomeItem(Integer isIncomeItem) {
+        this.isIncomeItem = isIncomeItem;
     }
 }

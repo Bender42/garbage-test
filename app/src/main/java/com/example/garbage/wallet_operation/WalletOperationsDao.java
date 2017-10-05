@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.garbage.SQLiteHelper;
-import com.example.garbage.cost_item.CostItem;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +23,7 @@ public class WalletOperationsDao {
         Cursor cursor = database.query(
                 WalletOperation.WALLET_OPERATION_TABLE_NAME,
                 null,
-                "from_wallet = ? or to_wallet = ?",
+                String.format("%s = ? or %s = ?", WalletOperation.FROM_WALLET_ID_COLUMN_NAME, WalletOperation.TO_WALLET_ID_COLUMN_NAME),
                 new String[] {String.valueOf(walletId), String.valueOf(walletId)},
                 null,
                 null,

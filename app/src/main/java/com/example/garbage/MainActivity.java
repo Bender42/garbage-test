@@ -28,6 +28,10 @@ import com.example.garbage.expenditure.AddExpenditureActivity;
 import com.example.garbage.expenditure.EditExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.expenditure.ExpenditureDao;
+import com.example.garbage.income_item.AddIncomeItemActivity;
+import com.example.garbage.income_item.EditIncomeItemActivity;
+import com.example.garbage.income_item.IncomeItem;
+import com.example.garbage.income_item.IncomeItemsDao;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.EditWalletActivity;
 import com.example.garbage.wallet.Wallet;
@@ -36,6 +40,8 @@ import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -44,31 +50,35 @@ import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static int SQL_ACTIVITY_CODE = 1;
-    public static int ADD_WALLET_ACTIVITY_CODE = 2;
-    public static int EDIT_WALLET_ACTIVITY_CODE = 3;
-    public static int ADD_EXPENDITURE_ACTIVITY_CODE = 4;
-    public static int EDIT_EXPENDITURE_ACTIVITY_CODE = 5;
-    public static int ADD_COST_ITEM_ACTIVITY_CODE = 6;
-    public static int ADD_WALLET_OPERATION_ACTIVITY_CODE = 7;
+    public static int ADD_INCOME_ITEM_ACTIVITY_CODE = 2;
+    public static int EDIT_INCOME_ITEM_ACTIVITY_CODE = 3;
+    public static int ADD_WALLET_ACTIVITY_CODE = 4;
+    public static int EDIT_WALLET_ACTIVITY_CODE = 5;
+    public static int ADD_EXPENDITURE_ACTIVITY_CODE = 6;
+    public static int EDIT_EXPENDITURE_ACTIVITY_CODE = 7;
+    public static int ADD_COST_ITEM_ACTIVITY_CODE = 8;
+    public static int ADD_WALLET_OPERATION_ACTIVITY_CODE = 9;
 
     public static int EXPENDITURE_COLUMN_COUNT = 5;
 
+    private IncomeItemsDao incomeItemsDao;
     private WalletsDao walletsDao;
     private ExpenditureDao expenditureDao;
 
+    private List<IncomeItem> incomeItems = new LinkedList<>();
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
     private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
 
+    private IncomeItem selectedIncomeItem = new IncomeItem();
     private Wallet selectedWallet = new Wallet();
     private Expenditure selectedExpenditure = new Expenditure();
 
+    private LinearLayout layoutIncomeItems;
     private LinearLayout layoutWallets;
     private LinearLayout layoutExpenditures;
 
     private TextView fromWallet;
     private TextView toExpenditure;
-
-    private SQLiteHelper dbHelper;
 
     @Override
     public void onBackPressed() {
@@ -112,7 +122,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        dbHelper = new SQLiteHelper(this);
+
+        incomeItemsDao = new IncomeItemsDao(this);
+        incomeItems = incomeItemsDao.getActiveIncomeItems();
 
         walletsDao = new WalletsDao(this);
         wallets = walletsDao.getActiveWallets();
@@ -124,13 +136,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         initNavigation();
         initFromTo();
 
+        layoutIncomeItems = (LinearLayout) findViewById(R.id.layout_income_items);
+        initAddIncomeItemButton();
         layoutWallets = (LinearLayout) findViewById(R.id.layout_wallets);
         initAddWalletButton();
         layoutExpenditures = (LinearLayout) findViewById(R.id.scroll_linear_layout_expenditures);
 
+        redrawIncomeItems();
         redrawWallets();
         redrawExpenditures();
-        redrawFromTo();
+        //redrawFromTo();
     }
 
     private void initFromTo() {
@@ -138,35 +153,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toExpenditure = (TextView) findViewById(R.id.tv_main_to_expenditure);
     }
 
-    private void redrawFromTo() {
+    /*private void redrawFromTo() {
         fromWallet.setText(selectedWallet.getName());
         toExpenditure.setText(selectedExpenditure.getName());
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
-            redrawMainActivity();
+            redrawWalletsAndExpenditures();
         } else if ((ADD_WALLET_ACTIVITY_CODE == requestCode || EDIT_WALLET_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
-            redrawMainActivity();
+            redrawWalletsAndExpenditures();
         } else if ((ADD_EXPENDITURE_ACTIVITY_CODE == requestCode || EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
-            redrawMainActivity();
+            redrawWalletsAndExpenditures();
         } else if ((ADD_COST_ITEM_ACTIVITY_CODE == requestCode || ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
-            redrawMainActivity();
+            redrawWalletsAndExpenditures();
         } else if (SQL_ACTIVITY_CODE == requestCode) {
-            redrawMainActivity();
+            redrawWalletsAndExpenditures();
+        } else if ((ADD_INCOME_ITEM_ACTIVITY_CODE == requestCode || EDIT_INCOME_ITEM_ACTIVITY_CODE == requestCode)
+                && RESULT_OK == resultCode) {
+            redrawIncomeItems();
         }
     }
 
-    private void redrawMainActivity() {
-        wallets = walletsDao.getActiveWallets();
-        expenditures = expenditureDao.getExpenditures();
+    private void cleanFromTo() {
+        selectedIncomeItem.updateIncomeItem(null);
         selectedWallet.updateWallet(null);
         selectedExpenditure.updateExpenditure(null);
-        redrawFromTo();
+        //redrawFromTo();
+    }
+
+    private void redrawWalletsAndExpenditures() {
         redrawWallets();
         redrawExpenditures();
     }
@@ -222,7 +242,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    private void initAddIncomeItemButton() {
+        ImageButton buttonAddWallet = (ImageButton) findViewById(R.id.image_button_add_income_item);
+        buttonAddWallet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentPref = new Intent(v.getContext(), AddIncomeItemActivity.class);
+                startActivityForResult(intentPref, ADD_INCOME_ITEM_ACTIVITY_CODE);
+            }
+        });
+    }
+
+    private void redrawIncomeItems() {
+        incomeItems = incomeItemsDao.getActiveIncomeItems();
+        layoutIncomeItems.removeAllViews();
+        for (IncomeItem incomeItem : incomeItems) {
+            ImageButton incomeItemButton = incomeItem.draw(layoutIncomeItems, this);
+            incomeItemButton.setOnLongClickListener(getOnIncomeItemLongClickListener(incomeItem.getId()));
+            incomeItemButton.setOnClickListener(getOnIncomeItemClickListener(incomeItem));
+        }
+    }
+
+    private View.OnLongClickListener getOnIncomeItemLongClickListener(final Integer id) {
+        return new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(v.getContext(), EditIncomeItemActivity.class);
+                intent.putExtra("incomeItemId", id);
+                startActivityForResult(intent, EDIT_INCOME_ITEM_ACTIVITY_CODE);
+                return true;
+            }
+        };
+    }
+
+    private View.OnClickListener getOnIncomeItemClickListener(final IncomeItem incomeItem) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedIncomeItem.updateIncomeItem(incomeItem);
+                if (selectedWallet.getId() != null) {
+
+                }
+            }
+        };
+    }
+
     private void redrawWallets() {
+        wallets = walletsDao.getActiveWallets();
         layoutWallets.removeAllViews();
         for (Wallet wallet : wallets.values()) {
             ImageButton walletButton = wallet.draw(layoutWallets, this);
@@ -266,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     selectedWallet.updateWallet(wallet);
                 }
-                redrawFromTo();
+                //redrawFromTo();
             }
         };
     }
@@ -288,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else {
                     selectedExpenditure.updateExpenditure(expenditure);
                 }
-                redrawFromTo();
+                //redrawFromTo();
             }
         };
     }
@@ -308,6 +374,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void redrawExpenditures() {
+        expenditures = expenditureDao.getExpenditures();
         layoutExpenditures.removeAllViews();
         LinearLayout linearLayout = getNewLinearLayoutExpenditure();
         layoutExpenditures.addView(linearLayout);

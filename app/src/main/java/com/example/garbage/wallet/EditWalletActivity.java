@@ -17,7 +17,6 @@ import com.example.garbage.cost_item.CostItem;
 import com.example.garbage.cost_item.CostItemDao;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.expenditure.ExpenditureDao;
-import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 import com.example.garbage.wallet_operation.WalletOperation;
 import com.example.garbage.wallet_operation.WalletOperationAdapter;
 import com.example.garbage.wallet_operation.WalletOperationsDao;
@@ -31,7 +30,7 @@ import java.util.Map;
 
 public class EditWalletActivity extends AppCompatActivity {
 
-    public static int ADD_WALLET_OPERATION_ACTIVITY_CODE = 1;
+    //public static int ADD_WALLET_OPERATION_ACTIVITY_CODE = 1;
 
     private Wallet wallet;
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
@@ -90,22 +89,22 @@ public class EditWalletActivity extends AppCompatActivity {
         Button bDeleteWallet = (Button) findViewById(R.id.b_delete_wallet);
         bDeleteWallet.setOnClickListener(getDeleteOnClickListener(this));
 
-        Button bAddWallet = (Button) findViewById(R.id.b_add_wallet);
-        bAddWallet.setOnClickListener(getAddOnClickListener(this));
+        /*Button bAddWallet = (Button) findViewById(R.id.b_add_wallet);
+        bAddWallet.setOnClickListener(getAddOnClickListener(this));*/
 
         initRecyclerViewWalletOperation();
     }
 
-    @Override
+    /*@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data != null) {
             if (ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
                 refreshDataAndAdapter();
             }
         }
-    }
+    }*/
 
-    private void refreshDataAndAdapter() {
+    /*private void refreshDataAndAdapter() {
         wallet = new Wallet(wallet.getId(), this);
         etWalletAmount.setText(String.valueOf(wallet.getAmount()));
         operations = getSortOperations(
@@ -114,7 +113,7 @@ public class EditWalletActivity extends AppCompatActivity {
         );
         adapterWalletOperations = new WalletOperationAdapter(operations, wallet, wallets, expenditures);
         rvWalletOperations.setAdapter(adapterWalletOperations);
-    }
+    }*/
 
     private void initRecyclerViewWalletOperation() {
         rvWalletOperations = (RecyclerView) findViewById(R.id.rv_wallet_wallet_operation_list);
@@ -170,7 +169,7 @@ public class EditWalletActivity extends AppCompatActivity {
         };
     }
 
-    private View.OnClickListener getAddOnClickListener(final Context context) {
+    /*private View.OnClickListener getAddOnClickListener(final Context context) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,5 +178,5 @@ public class EditWalletActivity extends AppCompatActivity {
                 startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
             }
         };
-    }
+    }*/
 }
