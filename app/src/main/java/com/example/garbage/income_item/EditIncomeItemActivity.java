@@ -46,11 +46,6 @@ public class EditIncomeItemActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         int incomeItemId = intent.getIntExtra("incomeItemId", 0);
-        if (incomeItemId == 0) {
-            //TODO Не работает, приложение падает
-            setResult(RESULT_CANCELED, new Intent());
-            finish();
-        }
         incomeItem = new IncomeItem(incomeItemId, this);
 
         WalletsDao walletsDao = new WalletsDao(this);

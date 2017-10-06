@@ -356,7 +356,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         if (!Objects.equals(selectedWallet.getCurrency(), wallet.getCurrency())) {
                             Toast.makeText(v.getContext(), getResources().getString(R.string.not_equal_currencies), Toast.LENGTH_LONG).show();
                         } else {
-                            selectedWallet.updateWallet(wallet);
                             Intent intent = getWalletOperationIntent(v.getContext(), selectedWallet, wallet);
                             startActivityForResult(intent, ADD_WALLET_OPERATION_ACTIVITY_CODE);
                         }

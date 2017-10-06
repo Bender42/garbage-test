@@ -131,11 +131,6 @@ public class AddCostItemActivity extends AppCompatActivity implements DatePicker
         Intent intent = getIntent();
         selectedWallet = (Wallet) intent.getSerializableExtra("wallet");
         selectedExpenditure = (Expenditure) intent.getSerializableExtra("expenditure");
-        if (selectedWallet == null || selectedExpenditure == null) {
-            //TODO Не работает, приложение падает
-            setResult(RESULT_CANCELED, new Intent());
-            finish();
-        }
     }
 
     @Override

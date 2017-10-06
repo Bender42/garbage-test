@@ -140,15 +140,10 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
         } else {
             Serializable serializableFromWallet = intent.getSerializableExtra("fromWallet");
             if (serializableFromWallet != null) {
-                fromWallet = (Wallet) intent.getSerializableExtra("fromIncomeItem");
+                fromWallet = (Wallet) intent.getSerializableExtra("fromWallet");
             }
         }
         toWallet = (Wallet) intent.getSerializableExtra("toWallet");
-        if (fromWallet != null && toWallet == null) {
-            //TODO Не работает, приложение падает
-            setResult(RESULT_CANCELED, new Intent());
-            finish();
-        }
     }
 
     @Override

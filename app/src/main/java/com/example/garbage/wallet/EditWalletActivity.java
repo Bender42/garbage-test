@@ -52,11 +52,6 @@ public class EditWalletActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         int walletId = intent.getIntExtra("walletId", 0);
-        if (walletId == 0) {
-            //TODO Не работает, приложение падает
-            setResult(RESULT_CANCELED, new Intent());
-            finish();
-        }
         wallet = new Wallet(walletId, this);
 
         WalletsDao walletsDao = new WalletsDao(this);
