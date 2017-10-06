@@ -5,7 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.garbage.SQLiteHelper;
+import com.example.garbage.database.SQLiteHelper;
 import com.example.garbage.wallet.Wallet;
 
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package com.example.garbage;
+package com.example.garbage.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

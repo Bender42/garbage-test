@@ -1,17 +1,18 @@
-package com.example.garbage;
+package com.example.garbage.database;
 
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.garbage.R;
+import com.example.garbage.database.SQLiteHelper;
 import com.example.garbage.wallet.Wallet;
 
 public class SQLiteActivity extends AppCompatActivity {

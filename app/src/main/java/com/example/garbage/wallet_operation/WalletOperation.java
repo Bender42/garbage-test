@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.garbage.IWallet;
 import com.example.garbage.IWalletOperation;
-import com.example.garbage.SQLiteHelper;
+import com.example.garbage.database.SQLiteHelper;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
 

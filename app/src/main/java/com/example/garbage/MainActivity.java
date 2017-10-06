@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.garbage.cost_item.AddCostItemActivity;
+import com.example.garbage.database.SQLiteActivity;
 import com.example.garbage.expenditure.AddExpenditureActivity;
 import com.example.garbage.expenditure.EditExpenditureActivity;
 import com.example.garbage.expenditure.Expenditure;
@@ -32,6 +33,8 @@ import com.example.garbage.income_item.AddIncomeItemActivity;
 import com.example.garbage.income_item.EditIncomeItemActivity;
 import com.example.garbage.income_item.IncomeItem;
 import com.example.garbage.income_item.IncomeItemsDao;
+import com.example.garbage.shortcut.ShortcutOneActivity;
+import com.example.garbage.shortcut.ShortcutThreeActivity;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.EditWalletActivity;
 import com.example.garbage.wallet.Wallet;

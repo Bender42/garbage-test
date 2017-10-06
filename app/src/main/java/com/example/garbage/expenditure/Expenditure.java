@@ -10,7 +10,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.example.garbage.SQLiteHelper;
+import com.example.garbage.database.SQLiteHelper;
 import com.example.garbage.wallet.Wallet;
 
 import java.io.Serializable;

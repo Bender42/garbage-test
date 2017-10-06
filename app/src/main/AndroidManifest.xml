@@ -24,9 +24,9 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity android:name=".ShortcutOneActivity" />
+        <activity android:name=".shortcut.ShortcutOneActivity" />
         <activity
-            android:name=".ShortcutThreeActivity"
+            android:name=".shortcut.ShortcutThreeActivity"
             android:label="@string/shortcut_three_activity" />
 
         <receiver
@@ -59,7 +59,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".PreferencesActivity" />
-        <activity android:name=".SQLiteActivity" />
+        <activity android:name=".database.SQLiteActivity" />
         <activity android:name=".wallet.AddWalletActivity" />
         <activity android:name=".expenditure.AddExpenditureActivity" />
         <activity android:name=".wallet.EditWalletActivity" />

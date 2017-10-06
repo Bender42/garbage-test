@@ -11,7 +11,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.garbage.IWallet;
-import com.example.garbage.SQLiteHelper;
+import com.example.garbage.database.SQLiteHelper;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

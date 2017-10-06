@@ -12,7 +12,7 @@
             android:targetPackage="com.example.garbage" />
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="com.example.garbage.ShortcutOneActivity"
+            android:targetClass="com.example.garbage.shortcut.ShortcutOneActivity"
             android:targetPackage="com.example.garbage" />
     </shortcut>
 </shortcuts>
