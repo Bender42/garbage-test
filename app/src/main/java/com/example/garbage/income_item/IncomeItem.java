@@ -4,11 +4,18 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.garbage.database.SQLiteHelper;
 import com.example.garbage.wallet.Wallet;
 
 import java.math.BigDecimal;
+
+import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
 
 public class IncomeItem extends Wallet {
 
@@ -43,6 +50,30 @@ public class IncomeItem extends Wallet {
         database.insert(WALLET_TABLE_NAME, null, contentValues);
         dbHelper.close();
         return true;
+    }
+
+    @Override
+    public ImageButton draw(ViewGroup view, Context context) {
+        FrameLayout frameLayout = new FrameLayout(context);
+
+        ImageButton buttonNewButton = new ImageButton(context);
+        buttonNewButton.setId(getId());
+        buttonNewButton.setMinimumHeight(convertDpsTpPixels(79, context));
+        buttonNewButton.setMinimumWidth(convertDpsTpPixels(79, context));
+        frameLayout.addView(buttonNewButton);
+
+        TextView textViewName = new TextView(context);
+        frameLayout.addView(textViewName);
+        textViewName.setMinimumHeight(convertDpsTpPixels(79, context));
+        textViewName.setMinimumWidth(convertDpsTpPixels(79, context));
+        textViewName.setText(getName());
+        textViewName.setGravity(Gravity.CENTER);
+        textViewName.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
+        textViewName.setTextSize(12);
+
+        view.addView(frameLayout);
+
+        return buttonNewButton;
     }
 
     public void updateIncomeItem(IncomeItem incomeItem) {

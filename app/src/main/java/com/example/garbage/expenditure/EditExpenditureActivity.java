@@ -71,7 +71,7 @@ public class EditExpenditureActivity extends AppCompatActivity {
         layoutManagerCostItems = new LinearLayoutManager(this);
         rvCostItems.setLayoutManager(layoutManagerCostItems);
 
-        adapterCostItems = new CostItemsAdapter(costItems);
+        adapterCostItems = new CostItemsAdapter(costItems, wallets);
         rvCostItems.setAdapter(adapterCostItems);
     }
 

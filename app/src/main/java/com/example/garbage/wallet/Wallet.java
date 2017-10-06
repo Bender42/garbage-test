@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
 import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
 import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
+import static com.example.garbage.tools.GarbageTools.getFormatAmount;
 
 public class Wallet implements IWallet, Serializable {
 
@@ -159,7 +160,7 @@ public class Wallet implements IWallet, Serializable {
         frameLayout.addView(textViewName);
         textViewName.setMinimumHeight(convertDpsTpPixels(79, context));
         textViewName.setMinimumWidth(convertDpsTpPixels(79, context));
-        textViewName.setText(getName());
+        textViewName.setText(String.format("%s\n\n%s", getName(), getFormatAmount(getAmount())));
         textViewName.setGravity(Gravity.CENTER);
         textViewName.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
         textViewName.setTextSize(12);
