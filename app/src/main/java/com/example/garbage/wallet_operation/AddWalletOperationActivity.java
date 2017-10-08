@@ -27,7 +27,6 @@ import java.util.Locale;
 public class AddWalletOperationActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private WalletOperation walletOperation = new WalletOperation();
-    IncomeItem fromIncomeItem1;
     IWallet fromWallet;
     Wallet toWallet;
 
@@ -39,13 +38,18 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
     private DatePickerDialog walletOperationDatePickedDialog;
     private TimePickerDialog walletOperationTimePickedDialog;
 
-    Long walletOperationDateTime;
-    Calendar calendar;
+    private Calendar calendar;
+
+    private SimpleDateFormat dateFormat;
+    private SimpleDateFormat timeFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_wallet_operation);
+
+        dateFormat = new SimpleDateFormat(getString(R.string.date_label_format), Locale.getDefault());
+        timeFormat = new SimpleDateFormat(getString(R.string.time_label_format), Locale.getDefault());
 
         initFromToWallets();
 
@@ -65,7 +69,6 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
         bAddWalletOperation.setOnClickListener(getWalletOperationOnClickListener(this));
 
         calendar = Calendar.getInstance();
-        walletOperationDateTime = calendar.getTimeInMillis();
 
         walletOperationDatePickedDialog = new DatePickerDialog(
                 this, this,
@@ -73,8 +76,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)
         );
-        SimpleDateFormat formatDate = new SimpleDateFormat(getString(R.string.date_label_format), Locale.getDefault());
-        tvWalletOperationDate.setText(formatDate.format(calendar.getTime()));
+        tvWalletOperationDate.setText(dateFormat.format(calendar.getTime()));
         tvWalletOperationDate.setOnClickListener(getSelectDateOnClickListener());
 
         walletOperationTimePickedDialog = new TimePickerDialog(
@@ -83,8 +85,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 calendar.get(Calendar.MINUTE),
                 true
         );
-        SimpleDateFormat formatTime = new SimpleDateFormat(getString(R.string.time_label_format), Locale.getDefault());
-        tvWalletOperationTime.setText(formatTime.format(calendar.getTime()));
+        tvWalletOperationTime.setText(timeFormat.format(calendar.getTime()));
         tvWalletOperationTime.setOnClickListener(getSelectTimeOnClickListener());
     }
 
@@ -116,7 +117,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 walletOperation.setToWalletId(toWallet.getId());
                 walletOperation.setAmount(etWalletOperationAmount.getText().toString());
                 walletOperation.setName(etWalletOperationName.getText().toString());
-                walletOperation.setTime(walletOperationDateTime);
+                walletOperation.setTime(calendar.getTimeInMillis());
                 if (walletOperation.isComplete()) {
                     if (!fromWallet.isIncomeItem() && (walletOperation.getAmount().compareTo(fromWallet.getAmount()) == 1)) {
                         Toast.makeText(v.getContext(), getResources().getString(R.string.not_enough_amount_on_wallet), Toast.LENGTH_LONG).show();
@@ -150,9 +151,7 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         calendar.set(year, month, dayOfMonth);
-        SimpleDateFormat format = new SimpleDateFormat(getString(R.string.date_label_format), Locale.getDefault());
-        walletOperationDateTime = calendar.getTimeInMillis();
-        tvWalletOperationDate.setText(format.format(calendar.getTime()));
+        tvWalletOperationDate.setText(dateFormat.format(calendar.getTime()));
     }
 
     @Override
@@ -164,8 +163,6 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                 hourOfDay,
                 minute
         );
-        SimpleDateFormat formatTime = new SimpleDateFormat(getString(R.string.time_label_format), Locale.getDefault());
-        walletOperationDateTime = calendar.getTimeInMillis();
-        tvWalletOperationTime.setText(formatTime.format(calendar.getTime()));
+        tvWalletOperationTime.setText(timeFormat.format(calendar.getTime()));
     }
 }

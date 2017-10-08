@@ -1,5 +1,6 @@
 package com.example.garbage.wallet;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +9,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.garbage.IWallet;
@@ -23,11 +26,14 @@ import com.example.garbage.wallet_operation.WalletOperation;
 import com.example.garbage.wallet_operation.WalletOperationAdapter;
 import com.example.garbage.wallet_operation.WalletOperationsDao;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class EditWalletActivity extends AppCompatActivity {
@@ -42,14 +48,28 @@ public class EditWalletActivity extends AppCompatActivity {
 
     private EditText etWalletName;
     private EditText etWalletAmount;
+    private TextView tvFromDate;
+    private TextView tvToDate;
+
+    private DatePickerDialog fromDatePickerDialog;
+    private DatePickerDialog toDatePickerDialog;
 
     private RecyclerView rvWalletOperations;
     private RecyclerView.Adapter adapterWalletOperations;
+
+    private Calendar fromDateCalendar;
+    private Calendar toDateCalendar;
+
+    private SimpleDateFormat dateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_wallet);
+
+        dateFormat = new SimpleDateFormat(getString(R.string.date_label_format), Locale.getDefault());
+
+        initFromToDate();
 
         Intent intent = getIntent();
         int walletId = intent.getIntExtra("walletId", 0);
@@ -66,13 +86,13 @@ public class EditWalletActivity extends AppCompatActivity {
 
         operations = getSortOperations(
                 walletOperationsDao.getWalletOperations(
-                        walletId,
-                        GarbageTools.getCurrentMonthStartTime(),
-                        null),
+                        wallet.getId(),
+                        fromDateCalendar.getTimeInMillis(),
+                        toDateCalendar.getTimeInMillis()),
                 costItemDao.getCostItems(
                         wallet.getId(),
-                        GarbageTools.getCurrentMonthStartTime(),
-                        null)
+                        fromDateCalendar.getTimeInMillis(),
+                        toDateCalendar.getTimeInMillis())
         );
 
         etWalletName = (EditText) findViewById(R.id.et_edit_wallet_name);
@@ -91,6 +111,35 @@ public class EditWalletActivity extends AppCompatActivity {
         bDeleteWallet.setOnClickListener(getDeleteOnClickListener(this));
 
         initRecyclerViewWalletOperation();
+    }
+
+    private void initFromToDate() {
+        fromDateCalendar = GarbageTools.getCurrentMonthStartCalendar();
+        fromDatePickerDialog = new DatePickerDialog(
+                this,
+                getOnFromDateSetListener(),
+                fromDateCalendar.get(Calendar.YEAR),
+                fromDateCalendar.get(Calendar.MONTH),
+                fromDateCalendar.get(Calendar.DAY_OF_MONTH)
+        );
+        tvFromDate = (TextView) findViewById(R.id.tv_edit_wallet_from_date);
+        tvFromDate.setText(dateFormat.format(fromDateCalendar.getTime()));
+        tvFromDate.setOnClickListener(getSelectFromDateOnClickListener());
+
+        toDateCalendar = Calendar.getInstance();
+        toDatePickerDialog = new DatePickerDialog(
+                this,
+                getOnToDateSetListener(),
+                toDateCalendar.get(Calendar.YEAR),
+                toDateCalendar.get(Calendar.MONTH),
+                toDateCalendar.get(Calendar.DAY_OF_MONTH)
+        );
+        tvToDate = (TextView) findViewById(R.id.tv_edit_wallet_to_date);
+        tvToDate.setText(dateFormat.format(toDateCalendar.getTime()));
+        tvToDate.setOnClickListener(getSelectToDateOnClickListener());
+
+        ImageButton ibRefreshOperation = (ImageButton) findViewById(R.id.ib_refresh_from_to);
+        ibRefreshOperation.setOnClickListener(getOnRefreshClickListener(this));
     }
 
     private void initRecyclerViewWalletOperation() {
@@ -143,6 +192,64 @@ public class EditWalletActivity extends AppCompatActivity {
                     setResult(RESULT_OK, new Intent());
                     finish();
                 }
+            }
+        };
+    }
+
+    private DatePickerDialog.OnDateSetListener getOnFromDateSetListener() {
+        return new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                fromDateCalendar.set(year, month, dayOfMonth);
+                tvFromDate.setText(dateFormat.format(fromDateCalendar.getTime()));
+            }
+        };
+    }
+
+    private DatePickerDialog.OnDateSetListener getOnToDateSetListener() {
+        return new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                toDateCalendar.set(year, month, dayOfMonth);
+                tvToDate.setText(dateFormat.format(toDateCalendar.getTime()));
+            }
+        };
+    }
+
+    private View.OnClickListener getSelectFromDateOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fromDatePickerDialog.show();
+            }
+        };
+    }
+
+    private View.OnClickListener getSelectToDateOnClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toDatePickerDialog.show();
+            }
+        };
+    }
+
+    private View.OnClickListener getOnRefreshClickListener(Context context) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                operations = getSortOperations(
+                        walletOperationsDao.getWalletOperations(
+                                wallet.getId(),
+                                fromDateCalendar.getTimeInMillis(),
+                                toDateCalendar.getTimeInMillis()),
+                        costItemDao.getCostItems(
+                                wallet.getId(),
+                                fromDateCalendar.getTimeInMillis(),
+                                toDateCalendar.getTimeInMillis())
+                );
+                adapterWalletOperations = new WalletOperationAdapter(operations, wallet, wallets, expenditures);
+                rvWalletOperations.setAdapter(adapterWalletOperations);
             }
         };
     }

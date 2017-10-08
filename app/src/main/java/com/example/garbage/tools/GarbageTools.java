@@ -26,16 +26,16 @@ public class GarbageTools {
     }
 
     public static long getCurrentMonthStartTime() {
+        return getCurrentMonthStartCalendar().getTimeInMillis();
+    }
+
+    public static Calendar getCurrentMonthStartCalendar() {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTimeInMillis();
-    }
-
-    public static long getCurrentTime() {
-        return Calendar.getInstance().getTimeInMillis();
+        return calendar;
     }
 }
