@@ -15,6 +15,7 @@ import com.example.garbage.R;
 import com.example.garbage.cost_item.CostItem;
 import com.example.garbage.cost_item.CostItemDao;
 import com.example.garbage.cost_item.CostItemsAdapter;
+import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.WalletsDao;
 
 import java.util.LinkedHashMap;
@@ -50,7 +51,12 @@ public class EditExpenditureActivity extends AppCompatActivity {
         wallets = walletsDao.getAllWallets();
 
         costItemDao = new CostItemDao(this);
-        costItems = costItemDao.getCostItems(expenditureId, wallets);//TODO Добавить ограничение по времени. Берем объекты только текущего месяца.
+        costItems = costItemDao.getCostItems(
+                expenditureId,
+                wallets,
+                GarbageTools.getCurrentMonthStartTime(),
+                null
+        );
 
         etExpenditureName = (EditText) findViewById(R.id.et_edit_expenditure_name);
         etExpenditureName.setText(expenditure.getName());

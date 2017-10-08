@@ -18,6 +18,7 @@ import com.example.garbage.cost_item.CostItem;
 import com.example.garbage.cost_item.CostItemDao;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.expenditure.ExpenditureDao;
+import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet_operation.WalletOperation;
 import com.example.garbage.wallet_operation.WalletOperationAdapter;
 import com.example.garbage.wallet_operation.WalletOperationsDao;
@@ -64,8 +65,14 @@ public class EditWalletActivity extends AppCompatActivity {
         costItemDao = new CostItemDao(this);
 
         operations = getSortOperations(
-                walletOperationsDao.getWalletOperations(walletId),
-                costItemDao.getCostItems(wallet.getId())
+                walletOperationsDao.getWalletOperations(
+                        walletId,
+                        GarbageTools.getCurrentMonthStartTime(),
+                        null),
+                costItemDao.getCostItems(
+                        wallet.getId(),
+                        GarbageTools.getCurrentMonthStartTime(),
+                        null)
         );
 
         etWalletName = (EditText) findViewById(R.id.et_edit_wallet_name);

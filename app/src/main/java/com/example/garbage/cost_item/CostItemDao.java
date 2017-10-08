@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.garbage.IWallet;
 import com.example.garbage.database.SQLiteHelper;
+import com.google.common.base.Joiner;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,14 +20,14 @@ public class CostItemDao {
         dbHelper = new SQLiteHelper(context);
     }
 
-    public List<CostItem> getCostItems(int expenditureId, Map<Integer, IWallet> wallets) {
+    public List<CostItem> getCostItems(int expenditureId, Map<Integer, IWallet> wallets, Long fromTime, Long toTime) {
         List<CostItem> costItems = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(
                 CostItem.COST_ITEM_TABLE_NAME,
                 null,
-                String.format("%s = ?", CostItem.EXPENDITURE_ID_COLUMN_NAME),
-                new String[] {String.valueOf(expenditureId)},
+                getSelectionExpenditure(expenditureId, fromTime, toTime),
+                getSelectionExpenditureArgs(expenditureId, fromTime, toTime),
                 null,
                 null,
                 String.format("%s DESC", CostItem.TIME_COLUMN_NAME));
@@ -44,14 +45,14 @@ public class CostItemDao {
         return costItems;
     }
 
-    public List<CostItem> getCostItems(int walletId) {
+    public List<CostItem> getCostItems(int walletId, Long fromTime, Long toTime) {
         List<CostItem> costItems = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(
                 CostItem.COST_ITEM_TABLE_NAME,
                 null,
-                String.format("%s = ?", CostItem.WALLET_ID_COLUMN_NAME),
-                new String[] {String.valueOf(walletId)},
+                getSelectionWallet(walletId, fromTime, toTime),
+                getSelectionWalletArgs(walletId, fromTime, toTime),
                 null,
                 null,
                 String.format("%s DESC", CostItem.TIME_COLUMN_NAME));
@@ -63,5 +64,61 @@ public class CostItemDao {
         cursor.close();
         dbHelper.close();
         return costItems;
+    }
+
+    private String getSelectionExpenditure(Integer expenditureId, Long fromTime, Long toTime) {
+        List<String> result = new LinkedList<>();
+        if (expenditureId != null) {
+            result.add(String.format("%s = ?", CostItem.EXPENDITURE_ID_COLUMN_NAME));
+        }
+        if (fromTime != null) {
+            result.add(String.format("and ? <= %s", CostItem.TIME_COLUMN_NAME));
+        }
+        if (toTime != null) {
+            result.add(String.format("and %s <= ?", CostItem.TIME_COLUMN_NAME));
+        }
+        return Joiner.on(" ").join(result);
+    }
+
+    private String getSelectionWallet(Integer wallet, Long fromTime, Long toTime) {
+        List<String> result = new LinkedList<>();
+        if (wallet != null) {
+            result.add(String.format("%s = ?", CostItem.WALLET_ID_COLUMN_NAME));
+        }
+        if (fromTime != null) {
+            result.add(String.format("and ? <= %s", CostItem.TIME_COLUMN_NAME));
+        }
+        if (toTime != null) {
+            result.add(String.format("and %s <= ?", CostItem.TIME_COLUMN_NAME));
+        }
+        return Joiner.on(" ").join(result);
+    }
+
+    private String[] getSelectionExpenditureArgs(Integer expenditureId, Long fromTime, Long toTime) {
+        List<String> result = new LinkedList<>();
+        if (expenditureId != null) {
+            result.add(String.valueOf(expenditureId));
+        }
+        if (fromTime != null) {
+            result.add(String.valueOf(fromTime));
+        }
+        if (toTime != null) {
+            result.add(String.valueOf(toTime));
+        }
+        return result.toArray(new String[0]);
+    }
+
+    private String[] getSelectionWalletArgs(Integer walletId, Long fromTime, Long toTime) {
+        List<String> result = new LinkedList<>();
+        if (walletId != null) {
+            result.add(String.valueOf(walletId));
+        }
+        if (fromTime != null) {
+            result.add(String.valueOf(fromTime));
+        }
+        if (toTime != null) {
+            result.add(String.valueOf(toTime));
+        }
+        return result.toArray(new String[0]);
     }
 }

@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.garbage.IWallet;
 import com.example.garbage.IWalletOperation;
 import com.example.garbage.R;
+import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.WalletsDao;
 import com.example.garbage.wallet_operation.WalletOperation;
 import com.example.garbage.wallet_operation.WalletOperationAdapter;
@@ -53,7 +54,10 @@ public class EditIncomeItemActivity extends AppCompatActivity {
 
         walletOperationsDao = new WalletOperationsDao(this);
 
-        operations = getSortOperations(walletOperationsDao.getWalletOperations(incomeItemId));
+        operations = getSortOperations(walletOperationsDao.getWalletOperations(
+                incomeItemId,
+                GarbageTools.getCurrentMonthStartTime(),
+                null));
 
         etIncomeItemName = (EditText) findViewById(R.id.et_edit_income_item_name);
         etIncomeItemName.setText(incomeItem.getName());
