@@ -210,7 +210,7 @@ public class EditWalletActivity extends AppCompatActivity {
         return new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                toDateCalendar.set(year, month, dayOfMonth);
+                toDateCalendar.set(year, month, dayOfMonth, 23, 59, 59);
                 tvToDate.setText(dateFormat.format(toDateCalendar.getTime()));
             }
         };
