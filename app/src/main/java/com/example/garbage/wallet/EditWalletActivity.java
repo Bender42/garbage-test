@@ -138,12 +138,12 @@ public class EditWalletActivity extends AppCompatActivity {
         tvToDate.setText(dateFormat.format(toDateCalendar.getTime()));
         tvToDate.setOnClickListener(getSelectToDateOnClickListener());
 
-        ImageButton ibRefreshOperation = (ImageButton) findViewById(R.id.ib_refresh_from_to);
+        ImageButton ibRefreshOperation = (ImageButton) findViewById(R.id.ib_wallet_refresh_from_to);
         ibRefreshOperation.setOnClickListener(getOnRefreshClickListener(this));
     }
 
     private void initRecyclerViewWalletOperation() {
-        rvWalletOperations = (RecyclerView) findViewById(R.id.rv_wallet_wallet_operation_list);
+        rvWalletOperations = (RecyclerView) findViewById(R.id.rv_wallet_operation_list);
         rvWalletOperations.setHasFixedSize(false);
 
         RecyclerView.LayoutManager layoutManagerWalletOperations = new LinearLayoutManager(this);

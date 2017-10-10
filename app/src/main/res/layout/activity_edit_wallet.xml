@@ -67,7 +67,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout8"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
@@ -98,7 +98,7 @@
             tools:text="12.12.2018г." />
 
         <ImageButton
-            android:id="@+id/ib_refresh_from_to"
+            android:id="@+id/ib_wallet_refresh_from_to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
@@ -106,7 +106,7 @@
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_wallet_wallet_operation_list"
+        android:id="@+id/rv_wallet_operation_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="8dp"
