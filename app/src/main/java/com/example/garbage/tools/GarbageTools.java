@@ -22,6 +22,9 @@ public class GarbageTools {
     }
 
     public static String getFormatAmount(BigDecimal amount) {
+        if (amount == null) {
+            return new DecimalFormat("#,##0.00").format(BigDecimal.ZERO);
+        }
         return new DecimalFormat("#,##0.00").format(amount);
     }
 

@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,8 +15,10 @@ import com.example.garbage.database.SQLiteHelper;
 import com.example.garbage.wallet.Wallet;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
+import static com.example.garbage.tools.GarbageTools.getFormatAmount;
 
 public class Expenditure implements Serializable {
 
@@ -27,6 +30,8 @@ public class Expenditure implements Serializable {
     private Integer id;
     private String name;
     private Integer icon;
+
+    private BigDecimal amount;
 
     public Expenditure() {
     }
@@ -99,7 +104,7 @@ public class Expenditure implements Serializable {
         return countDelete;
     }
 
-    public ImageButton draw(ViewGroup view, Context context) {
+    public ImageButton draw(ViewGroup view, Context context, SparseArray<BigDecimal> amounts) {
         FrameLayout frameLayout = new FrameLayout(context);
 
         ImageButton buttonNewButton = new ImageButton(context);
@@ -111,7 +116,8 @@ public class Expenditure implements Serializable {
         TextView textViewName = new TextView(context);
         textViewName.setMinimumHeight(convertDpsTpPixels(79, context));
         textViewName.setMinimumWidth(convertDpsTpPixels(79, context));
-        textViewName.setText(getName());
+        String name = String.format("%s\n\n%s", getName(), getFormatAmount(getAmount()));
+        textViewName.setText(name);
         textViewName.setGravity(Gravity.CENTER);
         textViewName.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
         textViewName.setTextSize(12);
@@ -156,5 +162,13 @@ public class Expenditure implements Serializable {
 
     public void setIcon(Integer icon) {
         this.icon = icon;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 }

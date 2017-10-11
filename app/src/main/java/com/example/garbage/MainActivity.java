@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
@@ -35,12 +36,14 @@ import com.example.garbage.income_item.IncomeItem;
 import com.example.garbage.income_item.IncomeItemsDao;
 import com.example.garbage.shortcut.ShortcutOneActivity;
 import com.example.garbage.shortcut.ShortcutThreeActivity;
+import com.example.garbage.tools.GarbageTools;
 import com.example.garbage.wallet.AddWalletActivity;
 import com.example.garbage.wallet.EditWalletActivity;
 import com.example.garbage.wallet.Wallet;
 import com.example.garbage.wallet.WalletsDao;
 import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<IncomeItem> incomeItems = new LinkedList<>();
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
     private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
+    private SparseArray<BigDecimal> expendituresAmounts = new SparseArray<>();
 
     private IncomeItem selectedIncomeItem = new IncomeItem();
     private Wallet selectedWallet = new Wallet();
@@ -134,7 +138,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         wallets = walletsDao.getActiveWallets();
 
         expenditureDao = new ExpenditureDao(this);
-        expenditures = expenditureDao.getExpenditures();
+        expenditures = expenditureDao.getExpendituresWithAmounts(
+                GarbageTools.getCurrentMonthStartTime(),
+                null);
 
         createShortcuts();
         initNavigation();
@@ -167,7 +173,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (data == null) {
             cleanFromTo();
-            redrawWalletsAndExpenditures();
         } else if ((ADD_WALLET_ACTIVITY_CODE == requestCode || EDIT_WALLET_ACTIVITY_CODE == requestCode)
                 && RESULT_OK == resultCode) {
             cleanFromTo();
@@ -200,7 +205,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void redrawWalletsAndExpenditures() {
         wallets = walletsDao.getActiveWallets();
-        expenditures = expenditureDao.getExpenditures();
+        expenditures = expenditureDao.getExpendituresWithAmounts(
+                GarbageTools.getCurrentMonthStartTime(),
+                null);
         redrawWallets();
         redrawExpenditures();
     }
@@ -425,7 +432,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 linearLayout = getNewLinearLayoutExpenditure();
                 layoutExpenditures.addView(linearLayout);
             }
-            ImageButton expenditureButton = expenditure.draw(linearLayout, this);
+            ImageButton expenditureButton = expenditure.draw(linearLayout, this, expendituresAmounts);
             expenditureButton.setOnLongClickListener(getOnExpenditureLongClickListener(expenditure.getId()));
             expenditureButton.setOnClickListener(getOnExpenditureClickListener(expenditure));
             index++;

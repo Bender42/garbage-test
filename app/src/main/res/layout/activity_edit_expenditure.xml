@@ -39,9 +39,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="Delete"
-        app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="8dp"
+        android:text="Delete"
+        android:visibility="invisible"
+        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_edit_expenditure_name" />
 
     <LinearLayout

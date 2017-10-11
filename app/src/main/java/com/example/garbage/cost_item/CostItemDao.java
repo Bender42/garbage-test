@@ -35,8 +35,10 @@ public class CostItemDao {
             do {
                 CostItem costItem = new CostItem(cursor);
                 Integer costItemWalletId = costItem.getWalletId();
-                costItem.setWalletName(wallets.get(costItemWalletId).getName());
-                costItem.setWalletCurrency(wallets.get(costItemWalletId).getCurrency());
+                if (wallets != null) {
+                    costItem.setWalletName(wallets.get(costItemWalletId).getName());
+                    costItem.setWalletCurrency(wallets.get(costItemWalletId).getCurrency());
+                }
                 costItems.add(costItem);
             } while (cursor.moveToNext());
         }

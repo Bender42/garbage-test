@@ -4,16 +4,22 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.garbage.cost_item.CostItem;
+import com.example.garbage.cost_item.CostItemDao;
 import com.example.garbage.database.SQLiteHelper;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ExpenditureDao {
 
+    private Context context;
     private SQLiteHelper dbHelper;
 
     public ExpenditureDao(Context context) {
+        this.context = context;
         dbHelper = new SQLiteHelper(context);
     }
 
@@ -24,11 +30,41 @@ public class ExpenditureDao {
         if (cursor.moveToFirst()) {
             do {
                 Expenditure expenditure = new Expenditure(cursor);
-                expenditures.put(expenditure.getId(), new Expenditure(cursor));
+                expenditures.put(expenditure.getId(), expenditure);
             } while (cursor.moveToNext());
         }
         cursor.close();
         dbHelper.close();
         return expenditures;
+    }
+
+    public Map<Integer, Expenditure> getExpendituresWithAmounts(Long fromTime, Long toTime) {
+        Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                Expenditure expenditure = new Expenditure(cursor);
+                expenditure.setAmount(getExpenditureAmount(expenditure.getId(), fromTime, toTime));
+                expenditures.put(expenditure.getId(), expenditure);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        dbHelper.close();
+        return expenditures;
+    }
+
+    private BigDecimal getExpenditureAmount(Integer expenditureId, Long fromTime, Long toTime) {
+        CostItemDao costItemDao = new CostItemDao(context);
+        List<CostItem> costItemList = costItemDao.getCostItems(expenditureId, null, fromTime, toTime);
+        return getFullAmount(costItemList);
+    }
+
+    private BigDecimal getFullAmount(List<CostItem> list) {
+        BigDecimal result = BigDecimal.ZERO;
+        for (CostItem costItem : list) {
+            result = result.add(costItem.getAmount());
+        }
+        return result;
     }
 }
