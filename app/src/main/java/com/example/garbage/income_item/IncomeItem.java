@@ -16,6 +16,7 @@ import com.example.garbage.wallet.Wallet;
 import java.math.BigDecimal;
 
 import static com.example.garbage.tools.GarbageTools.convertDpsTpPixels;
+import static com.example.garbage.tools.GarbageTools.getFormatAmount;
 
 public class IncomeItem extends Wallet {
 
@@ -66,7 +67,7 @@ public class IncomeItem extends Wallet {
         frameLayout.addView(textViewName);
         textViewName.setMinimumHeight(convertDpsTpPixels(79, context));
         textViewName.setMinimumWidth(convertDpsTpPixels(79, context));
-        textViewName.setText(getName());
+        textViewName.setText(String.format("%s\n\n%s", getName(), getFormatAmount(getAmount())));
         textViewName.setGravity(Gravity.CENTER);
         textViewName.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
         textViewName.setTextSize(12);

@@ -43,7 +43,6 @@ import com.example.garbage.wallet.Wallet;
 import com.example.garbage.wallet.WalletsDao;
 import com.example.garbage.wallet_operation.AddWalletOperationActivity;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -74,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private List<IncomeItem> incomeItems = new LinkedList<>();
     private Map<Integer, Wallet> wallets = new LinkedHashMap<>();
     private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
-    private SparseArray<BigDecimal> expendituresAmounts = new SparseArray<>();
 
     private IncomeItem selectedIncomeItem = new IncomeItem();
     private Wallet selectedWallet = new Wallet();
@@ -132,7 +130,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
         incomeItemsDao = new IncomeItemsDao(this);
-        incomeItems = incomeItemsDao.getActiveIncomeItems();
+        incomeItems = incomeItemsDao.getActiveIncomeItemsWithAmounts(
+                GarbageTools.getCurrentMonthStartTime(),
+                null);
 
         walletsDao = new WalletsDao(this);
         wallets = walletsDao.getActiveWallets();
@@ -171,28 +171,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (data == null) {
+        if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
             cleanFromTo();
-        } else if ((ADD_WALLET_ACTIVITY_CODE == requestCode || EDIT_WALLET_ACTIVITY_CODE == requestCode)
-                && RESULT_OK == resultCode) {
+            redrawWallets();
+        } else if (EDIT_WALLET_ACTIVITY_CODE == requestCode && (RESULT_OK == resultCode || RESULT_CANCELED == resultCode)) {
             cleanFromTo();
-            redrawWalletsAndExpenditures();
-        } else if ((ADD_EXPENDITURE_ACTIVITY_CODE == requestCode || EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode)
-                && RESULT_OK == resultCode) {
+            redrawIncomeItems();
+            redrawWallets();
+            redrawExpenditures();
+        } else if (ADD_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
             cleanFromTo();
-            redrawWalletsAndExpenditures();
-        } else if ((ADD_COST_ITEM_ACTIVITY_CODE == requestCode || ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode)
-                && RESULT_OK == resultCode) {
+            redrawExpenditures();
+        } else if (EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode && (RESULT_OK == resultCode || RESULT_CANCELED == resultCode)) {
             cleanFromTo();
-            redrawWalletsAndExpenditures();
+            redrawWallets();
+            redrawExpenditures();
+        } else if (ADD_COST_ITEM_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            cleanFromTo();
+            redrawWallets();
+            redrawExpenditures();
+        } else if (ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            cleanFromTo();
+            redrawIncomeItems();
+            redrawWallets();
         } else if (SQL_ACTIVITY_CODE == requestCode) {
             cleanFromTo();
-            redrawWalletsAndExpenditures();
-        } else if ((ADD_INCOME_ITEM_ACTIVITY_CODE == requestCode || EDIT_INCOME_ITEM_ACTIVITY_CODE == requestCode)
-                && RESULT_OK == resultCode) {
-            cleanFromTo();
-            incomeItems = incomeItemsDao.getActiveIncomeItems();
             redrawIncomeItems();
+            redrawWallets();
+            redrawExpenditures();
+        } else if (ADD_INCOME_ITEM_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
+            cleanFromTo();
+            redrawIncomeItems();
+        } else if (EDIT_INCOME_ITEM_ACTIVITY_CODE == requestCode && (RESULT_OK == resultCode || RESULT_CANCELED == resultCode)) {
+            cleanFromTo();
+            redrawIncomeItems();
+            redrawWallets();
         }
     }
 
@@ -201,15 +214,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         selectedWallet.updateWallet(null);
         selectedExpenditure.updateExpenditure(null);
         redrawFromTo();
-    }
-
-    private void redrawWalletsAndExpenditures() {
-        wallets = walletsDao.getActiveWallets();
-        expenditures = expenditureDao.getActiveExpendituresWithAmounts(
-                GarbageTools.getCurrentMonthStartTime(),
-                null);
-        redrawWallets();
-        redrawExpenditures();
     }
 
     private void createShortcuts() {
@@ -275,6 +279,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void redrawIncomeItems() {
+        incomeItems = incomeItemsDao.getActiveIncomeItemsWithAmounts(
+                GarbageTools.getCurrentMonthStartTime(),
+                null);
         layoutIncomeItems.removeAllViews();
         for (IncomeItem incomeItem : incomeItems) {
             ImageButton incomeItemButton = incomeItem.draw(layoutIncomeItems, this);
@@ -296,6 +303,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void redrawWallets() {
+        wallets = walletsDao.getActiveWallets();
         layoutWallets.removeAllViews();
         for (Wallet wallet : wallets.values()) {
             ImageButton walletButton = wallet.draw(layoutWallets, this);
@@ -423,6 +431,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void redrawExpenditures() {
+        expenditures = expenditureDao.getActiveExpendituresWithAmounts(
+                GarbageTools.getCurrentMonthStartTime(),
+                null);
         layoutExpenditures.removeAllViews();
         LinearLayout linearLayout = getNewLinearLayoutExpenditure();
         layoutExpenditures.addView(linearLayout);
@@ -432,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 linearLayout = getNewLinearLayoutExpenditure();
                 layoutExpenditures.addView(linearLayout);
             }
-            ImageButton expenditureButton = expenditure.draw(linearLayout, this, expendituresAmounts);
+            ImageButton expenditureButton = expenditure.draw(linearLayout, this);
             expenditureButton.setOnLongClickListener(getOnExpenditureLongClickListener(expenditure.getId()));
             expenditureButton.setOnClickListener(getOnExpenditureClickListener(expenditure));
             index++;

@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -12,7 +11,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.garbage.database.SQLiteHelper;
-import com.example.garbage.wallet.Wallet;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -118,7 +116,7 @@ public class Expenditure implements Serializable {
         return countDelete;
     }
 
-    public ImageButton draw(ViewGroup view, Context context, SparseArray<BigDecimal> amounts) {
+    public ImageButton draw(ViewGroup view, Context context) {
         FrameLayout frameLayout = new FrameLayout(context);
 
         ImageButton buttonNewButton = new ImageButton(context);
