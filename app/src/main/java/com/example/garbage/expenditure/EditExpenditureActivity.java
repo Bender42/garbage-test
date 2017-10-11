@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -34,7 +35,7 @@ import java.util.Map;
 public class EditExpenditureActivity extends AppCompatActivity {
 
     private Expenditure expenditure;
-    private Map<Integer, IWallet> wallets = new LinkedHashMap<>();
+    private SparseArray<IWallet> wallets = new SparseArray<>();
     private List<CostItem> costItems = new LinkedList<>();
 
     private WalletsDao walletsDao;

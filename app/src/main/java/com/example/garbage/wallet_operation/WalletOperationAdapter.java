@@ -2,6 +2,7 @@ package com.example.garbage.wallet_operation;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -26,15 +27,15 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
 
     private List<IWalletOperation> operations;
     private IWallet currentWallet;
-    private Map<Integer, IWallet> wallets = new LinkedHashMap<>();
-    private Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
+    private SparseArray<IWallet> wallets = new SparseArray<>();
+    private SparseArray<Expenditure> expenditures = new SparseArray<>();
 
     private Context context;
 
     public WalletOperationAdapter(List<IWalletOperation> operations,
                                   Wallet currentWallet,
-                                  Map<Integer, IWallet> wallets,
-                                  Map<Integer, Expenditure> expenditures) {
+                                  SparseArray<IWallet> wallets,
+                                  SparseArray<Expenditure> expenditures) {
         this.operations = operations;
         this.currentWallet = currentWallet;
         this.wallets = wallets;

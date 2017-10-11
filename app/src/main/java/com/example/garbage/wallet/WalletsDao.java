@@ -3,6 +3,7 @@ package com.example.garbage.wallet;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 
 import com.example.garbage.IWallet;
 import com.example.garbage.database.SQLiteHelper;
@@ -18,8 +19,8 @@ public class WalletsDao {
         dbHelper = new SQLiteHelper(context);
     }
 
-    public Map<Integer, IWallet> getAllWallets() {
-        Map<Integer, IWallet> wallets = new LinkedHashMap<>();
+    public SparseArray<IWallet> getAllWallets() {
+        SparseArray<IWallet> wallets = new SparseArray<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(Wallet.WALLET_TABLE_NAME, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {

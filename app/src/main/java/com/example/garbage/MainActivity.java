@@ -16,7 +16,6 @@ import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;

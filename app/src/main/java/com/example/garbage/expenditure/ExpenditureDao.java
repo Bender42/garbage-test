@@ -3,6 +3,7 @@ package com.example.garbage.expenditure;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 
 import com.example.garbage.cost_item.CostItem;
 import com.example.garbage.cost_item.CostItemDao;
@@ -23,8 +24,8 @@ public class ExpenditureDao {
         dbHelper = new SQLiteHelper(context);
     }
 
-    public Map<Integer, Expenditure> getAllExpenditures() {
-        Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
+    public SparseArray<Expenditure> getAllExpenditures() {
+        SparseArray<Expenditure> expenditures = new SparseArray<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
         if (cursor.moveToFirst()) {
@@ -72,9 +73,10 @@ public class ExpenditureDao {
                 null,
                 null);
         if (cursor.moveToFirst()) {
+            CostItemDao costItemDao = new CostItemDao(context);
             do {
                 Expenditure expenditure = new Expenditure(cursor);
-                expenditure.setAmount(getExpenditureAmount(expenditure.getId(), fromTime, toTime));
+                expenditure.setAmount(getExpenditureAmount(expenditure.getId(), fromTime, toTime, costItemDao));
                 expenditures.put(expenditure.getId(), expenditure);
             } while (cursor.moveToNext());
         }
@@ -83,8 +85,7 @@ public class ExpenditureDao {
         return expenditures;
     }
 
-    private BigDecimal getExpenditureAmount(Integer expenditureId, Long fromTime, Long toTime) {
-        CostItemDao costItemDao = new CostItemDao(context);
+    private BigDecimal getExpenditureAmount(Integer expenditureId, Long fromTime, Long toTime, CostItemDao costItemDao) {
         List<CostItem> costItemList = costItemDao.getCostItems(expenditureId, null, fromTime, toTime);
         return getFullAmount(costItemList);
     }

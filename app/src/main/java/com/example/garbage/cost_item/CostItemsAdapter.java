@@ -2,6 +2,7 @@ package com.example.garbage.cost_item;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -22,11 +23,11 @@ import java.util.Map;
 public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.ViewHolder> {
 
     private List<CostItem> costItems;
-    private Map<Integer, IWallet> wallets = new LinkedHashMap<>();
+    private SparseArray<IWallet> wallets = new SparseArray<>();
 
     private Context context;
 
-    public CostItemsAdapter(List<CostItem> costItems, Map<Integer, IWallet> wallets) {
+    public CostItemsAdapter(List<CostItem> costItems, SparseArray<IWallet> wallets) {
         this.costItems = costItems;
         this.wallets = wallets;
     }

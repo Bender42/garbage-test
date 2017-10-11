@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 
 import com.example.garbage.IWallet;
 import com.example.garbage.IWalletOperation;
@@ -99,7 +100,7 @@ public class CostItem implements IWalletOperation {
      * @param wallets список всех кошельков
      */
     @Override
-    public boolean delete(Context context, Map<Integer, IWallet> wallets) {
+    public boolean delete(Context context, SparseArray<IWallet> wallets) {
         try {
             SQLiteHelper dbHelper = new SQLiteHelper(context);
             SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -125,7 +126,7 @@ public class CostItem implements IWalletOperation {
     }
 
     @Override
-    public String getDescription(IWallet currentWallet, Map<Integer, IWallet> wallets, Map<Integer, Expenditure> expenditures) {
+    public String getDescription(IWallet currentWallet, SparseArray<IWallet> wallets, SparseArray<Expenditure> expenditures) {
         if (expenditures != null) {
             Expenditure expenditure = expenditures.get(getExpenditureId());
             if (expenditure != null) {

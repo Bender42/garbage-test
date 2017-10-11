@@ -1,6 +1,7 @@
 package com.example.garbage;
 
 import android.content.Context;
+import android.util.SparseArray;
 
 import com.example.garbage.expenditure.Expenditure;
 
@@ -17,9 +18,9 @@ public interface IWalletOperation {
 
     Long getTime();
 
-    boolean delete(Context context, Map<Integer, IWallet> wallets);
+    boolean delete(Context context, SparseArray<IWallet> wallets);
 
     boolean isAddingAmount(IWallet currentWallet);
 
-    String getDescription(IWallet currentWallet, Map<Integer, IWallet> wallets, Map<Integer, Expenditure> expenditures);
+    String getDescription(IWallet currentWallet, SparseArray<IWallet> wallets, SparseArray<Expenditure> expenditures);
 }

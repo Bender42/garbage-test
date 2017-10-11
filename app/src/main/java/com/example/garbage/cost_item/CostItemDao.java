@@ -3,6 +3,7 @@ package com.example.garbage.cost_item;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.SparseArray;
 
 import com.example.garbage.IWallet;
 import com.example.garbage.database.SQLiteHelper;
@@ -20,7 +21,7 @@ public class CostItemDao {
         dbHelper = new SQLiteHelper(context);
     }
 
-    public List<CostItem> getCostItems(int expenditureId, Map<Integer, IWallet> wallets, Long fromTime, Long toTime) {
+    public List<CostItem> getCostItems(int expenditureId, SparseArray<IWallet> wallets, Long fromTime, Long toTime) {
         List<CostItem> costItems = new LinkedList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(
