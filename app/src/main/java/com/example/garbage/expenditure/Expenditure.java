@@ -26,10 +26,12 @@ public class Expenditure implements Serializable {
     public static String ID_COLUMN_NAME = "id";
     public static String NAME_COLUMN_NAME = "name";
     public static String ICON_COLUMN_NAME = "icon";
+    public static String STATUS_COLUMN_NAME = "status";
 
     private Integer id;
     private String name;
     private Integer icon;
+    private String status;
 
     private BigDecimal amount;
 
@@ -38,11 +40,13 @@ public class Expenditure implements Serializable {
 
     public Expenditure(Cursor cursor) {
         int idIndex = cursor.getColumnIndex(ID_COLUMN_NAME);
-        int idName = cursor.getColumnIndex(NAME_COLUMN_NAME);
-        int idIcon = cursor.getColumnIndex(ICON_COLUMN_NAME);
+        int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
+        int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
+        int statusIndex = cursor.getColumnIndex(STATUS_COLUMN_NAME);
         this.id = cursor.getInt(idIndex);
-        this.name = cursor.getString(idName);
-        this.icon = cursor.getInt(idIcon);
+        this.name = cursor.getString(nameIndex);
+        this.icon = cursor.getInt(iconIndex);
+        this.status = cursor.getString(statusIndex);
     }
 
     public Expenditure(int id, Context context) {
@@ -51,10 +55,7 @@ public class Expenditure implements Serializable {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(
                 EXPENDITURE_TABLE_NAME,
-                new String[] {
-                        Wallet.NAME_COLUMN_NAME,
-                        Wallet.ICON_COLUMN_NAME
-                },
+                null,
                 "id = ?",
                 new String[] {String.valueOf(id)},
                 null,
@@ -63,8 +64,10 @@ public class Expenditure implements Serializable {
         if (cursor.moveToFirst()) {
             int nameIndex = cursor.getColumnIndex(NAME_COLUMN_NAME);
             int iconIndex = cursor.getColumnIndex(ICON_COLUMN_NAME);
+            int statusIndex = cursor.getColumnIndex(STATUS_COLUMN_NAME);
             this.name = cursor.getString(nameIndex);
             this.icon = cursor.getInt(iconIndex);
+            this.status = cursor.getString(statusIndex);
         }
         cursor.close();
         dbHelper.close();
@@ -80,6 +83,7 @@ public class Expenditure implements Serializable {
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COLUMN_NAME, name);
         contentValues.put(ICON_COLUMN_NAME, icon);
+        contentValues.put(STATUS_COLUMN_NAME, "active");
         database.insert(EXPENDITURE_TABLE_NAME, null, contentValues);
         dbHelper.close();
         return true;
@@ -94,6 +98,16 @@ public class Expenditure implements Serializable {
         int countUpdate = database.update(EXPENDITURE_TABLE_NAME, contentValues, "id = ?", new String[] { String.valueOf(id) });
         dbHelper.close();
         return countUpdate;
+    }
+
+    public int archive(Context context) {
+        SQLiteHelper dbHelper = new SQLiteHelper(context);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(STATUS_COLUMN_NAME, "archive");
+        int countArchive = database.update(EXPENDITURE_TABLE_NAME, contentValues, "id = ?", new String[] { String.valueOf(id) });
+        dbHelper.close();
+        return countArchive;
     }
 
     public int delete(Context context) {
@@ -170,5 +184,13 @@ public class Expenditure implements Serializable {
 
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

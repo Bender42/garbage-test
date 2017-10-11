@@ -148,7 +148,7 @@ public class EditExpenditureActivity extends AppCompatActivity {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (expenditure.delete(context) == 1) {
+                if (expenditure.archive(context) == 1) {
                     setResult(RESULT_OK, new Intent());
                     finish();
                 }

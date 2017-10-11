@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         wallets = walletsDao.getActiveWallets();
 
         expenditureDao = new ExpenditureDao(this);
-        expenditures = expenditureDao.getExpendituresWithAmounts(
+        expenditures = expenditureDao.getActiveExpendituresWithAmounts(
                 GarbageTools.getCurrentMonthStartTime(),
                 null);
 
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void redrawWalletsAndExpenditures() {
         wallets = walletsDao.getActiveWallets();
-        expenditures = expenditureDao.getExpendituresWithAmounts(
+        expenditures = expenditureDao.getActiveExpendituresWithAmounts(
                 GarbageTools.getCurrentMonthStartTime(),
                 null);
         redrawWallets();

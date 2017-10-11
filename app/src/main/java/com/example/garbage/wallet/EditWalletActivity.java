@@ -79,7 +79,7 @@ public class EditWalletActivity extends AppCompatActivity {
         wallets = walletsDao.getAllWallets();
 
         ExpenditureDao expenditureDao = new ExpenditureDao(this);
-        expenditures = expenditureDao.getExpenditures();
+        expenditures = expenditureDao.getAllExpenditures();
 
         walletOperationsDao = new WalletOperationsDao(this);
         costItemDao = new CostItemDao(this);

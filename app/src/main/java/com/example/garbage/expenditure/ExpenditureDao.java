@@ -23,7 +23,7 @@ public class ExpenditureDao {
         dbHelper = new SQLiteHelper(context);
     }
 
-    public Map<Integer, Expenditure> getExpenditures() {
+    public Map<Integer, Expenditure> getAllExpenditures() {
         Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
@@ -38,10 +38,39 @@ public class ExpenditureDao {
         return expenditures;
     }
 
-    public Map<Integer, Expenditure> getExpendituresWithAmounts(Long fromTime, Long toTime) {
+    public Map<Integer, Expenditure> getActiveExpenditures() {
         Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
-        Cursor cursor = database.query(Expenditure.EXPENDITURE_TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = database.query(
+                Expenditure.EXPENDITURE_TABLE_NAME,
+                null,
+                String.format("%s = ?", Expenditure.STATUS_COLUMN_NAME),
+                new String[] {"active"},
+                null,
+                null,
+                null);
+        if (cursor.moveToFirst()) {
+            do {
+                Expenditure expenditure = new Expenditure(cursor);
+                expenditures.put(expenditure.getId(), expenditure);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        dbHelper.close();
+        return expenditures;
+    }
+
+    public Map<Integer, Expenditure> getActiveExpendituresWithAmounts(Long fromTime, Long toTime) {
+        Map<Integer, Expenditure> expenditures = new LinkedHashMap<>();
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        Cursor cursor = database.query(
+                Expenditure.EXPENDITURE_TABLE_NAME,
+                null,
+                String.format("%s = ?", Expenditure.STATUS_COLUMN_NAME),
+                new String[] {"active"},
+                null,
+                null,
+                null);
         if (cursor.moveToFirst()) {
             do {
                 Expenditure expenditure = new Expenditure(cursor);
