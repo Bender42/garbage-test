@@ -1,14 +1,7 @@
 <resources>
     <string name="app_name">Garbage</string>
 
-    <string name="activity_main_button">Переход к Shortcut One</string>
     <string name="activity_main_change_rank_button">Изменение порядка</string>
-
-    <string name="shortcut_one_text">Shortcut One</string>
-    <string name="shortcut_one_long_label">Большое большое прям длинное описание</string>
-    <string name="shortcut_one_short_label">Короткое описание</string>
-
-    <string name="shortcut_three_activity">Shortcut Three</string>
 
     <string name="appwidget_text">ПРИМЕР</string>
     <string name="add_widget">Добавить виджет</string>
@@ -60,4 +53,8 @@
     <string name="not_equal_currencies">Валюты кошельков не могут быть разными</string>
     <string name="date_label_format">dd.MM.yyyyг.</string>
     <string name="time_label_format">HH:mm</string>
+
+    <string name="tv_income_item_label">Статьи доходов</string>
+    <string name="tv_wallets_label">Счета</string>
+    <string name="tv_expenditures_label">Статьи расходов</string>
 </resources>
