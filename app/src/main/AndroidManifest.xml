@@ -24,10 +24,6 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
-        <activity android:name=".shortcut.ShortcutOneActivity" />
-        <activity
-            android:name=".shortcut.ShortcutThreeActivity"
-            android:label="@string/shortcut_three_activity" />
 
         <receiver
             android:name=".GarbageWidget"
