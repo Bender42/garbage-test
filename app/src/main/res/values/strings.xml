@@ -58,4 +58,7 @@
     <string name="tv_income_item_label">Статьи доходов</string>
     <string name="tv_wallets_label">Счета</string>
     <string name="tv_expenditures_label">Статьи расходов</string>
+
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
 </resources>

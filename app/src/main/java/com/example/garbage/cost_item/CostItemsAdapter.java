@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.ViewHolder> {
@@ -50,12 +51,12 @@ public class CostItemsAdapter extends RecyclerView.Adapter<CostItemsAdapter.View
         holder.walletName.setText(String.format("оплата из %s", select.getWalletName()));
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(select.getTime());
-        SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyyг. HH:mm");
+        SimpleDateFormat formatDate = new SimpleDateFormat(context.getString(R.string.date_time_label_format), Locale.getDefault());
         holder.time.setText(formatDate.format(calendar.getTime()));
         holder.menu.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.add(0, 1, 0, "Удалить").setOnMenuItemClickListener(getOnMenuItemClickListener(position));
+                menu.add(0, 1, 0, context.getString(R.string.delete)).setOnMenuItemClickListener(getOnMenuItemClickListener(position));
             }
         });
     }

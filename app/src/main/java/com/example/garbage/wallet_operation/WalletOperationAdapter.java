@@ -71,8 +71,8 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         holder.menu.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.add(0, 1, 1, "Редактировать").setOnMenuItemClickListener(getOnMenuItemClickListener(position));
-                menu.add(0, 2, 0, "Удалить").setOnMenuItemClickListener(getOnMenuItemClickListener(position));
+                menu.add(0, 1, 1, context.getString(R.string.edit)).setOnMenuItemClickListener(getOnMenuItemClickListener(position));
+                menu.add(0, 2, 0, context.getString(R.string.delete)).setOnMenuItemClickListener(getOnMenuItemClickListener(position));
             }
         });
     }
