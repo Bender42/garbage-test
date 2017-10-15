@@ -15,16 +15,15 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.garbage.IWallet;
+import com.example.garbage.MainActivity;
 import com.example.garbage.R;
-import com.example.garbage.income_item.IncomeItem;
 import com.example.garbage.wallet.Wallet;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class AddWalletOperationActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class EditWalletOperationActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
 
     private WalletOperation walletOperation = new WalletOperation();
     private IWallet fromWallet;
@@ -46,29 +45,32 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_wallet_operation);
+        setContentView(R.layout.activity_edit_wallet_operation);
 
         dateFormat = new SimpleDateFormat(getString(R.string.date_label_format), Locale.getDefault());
         timeFormat = new SimpleDateFormat(getString(R.string.time_label_format), Locale.getDefault());
 
         initFromToWallets();
 
-        TextView tvFromWalletName = (TextView) findViewById(R.id.tv_wallet_oper_from_wallet_name);
-        TextView tvToWalletName = (TextView) findViewById(R.id.tv_wallet_oper_to_wallet_name);
-        TextView tvToWalletCurrency = (TextView) findViewById(R.id.tv_wallet_oper_to_wallet_currency);
-        etWalletOperationName = (EditText) findViewById(R.id.et_wallet_oper_name);
-        etWalletOperationAmount = (EditText) findViewById(R.id.et_wallet_oper_amount);
-        tvWalletOperationDate = (TextView) findViewById(R.id.tv_wallet_oper_date);
-        tvWalletOperationTime = (TextView) findViewById(R.id.tv_wallet_oper_time);
+        TextView tvFromWalletName = (TextView) findViewById(R.id.tv_edit_wallet_oper_from_wallet_name);
+        TextView tvToWalletName = (TextView) findViewById(R.id.tv_edit_wallet_oper_to_wallet_name);
+        TextView tvToWalletCurrency = (TextView) findViewById(R.id.tv_edit_wallet_oper_to_wallet_currency);
+        etWalletOperationName = (EditText) findViewById(R.id.et_edit_wallet_oper_name);
+        etWalletOperationAmount = (EditText) findViewById(R.id.et_edit_wallet_oper_amount);
+        tvWalletOperationDate = (TextView) findViewById(R.id.tv_edit_wallet_oper_date);
+        tvWalletOperationTime = (TextView) findViewById(R.id.tv_edit_wallet_oper_time);
 
         tvFromWalletName.setText(fromWallet.getName());
         tvToWalletName.setText(toWallet.getName());
         tvToWalletCurrency.setText(toWallet.getCurrency());
+        etWalletOperationName.setText(walletOperation.getName());
+        etWalletOperationAmount.setText(String.format("%s", walletOperation.getAmount()));
 
-        Button bAddWalletOperation = (Button) findViewById(R.id.b_add_wallet_oper);
+        Button bAddWalletOperation = (Button) findViewById(R.id.b_edit_wallet_oper);
         bAddWalletOperation.setOnClickListener(getWalletOperationOnClickListener(this));
 
         calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(walletOperation.getTime());
 
         walletOperationDatePickedDialog = new DatePickerDialog(
                 this, this,
@@ -122,10 +124,10 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
                     if (!fromWallet.isIncomeItem() && (walletOperation.getAmount().compareTo(fromWallet.getAmount()) == 1)) {
                         Toast.makeText(v.getContext(), getResources().getString(R.string.not_enough_amount_on_wallet), Toast.LENGTH_LONG).show();
                     } else {
-                        if (walletOperation.post(context, fromWallet, toWallet)) {
-                            setResult(RESULT_OK, new Intent());
-                            finish();
-                        }
+                        /*if (walletOperation.post(context, fromWallet, toWallet)) {
+                            startActivity(new Intent(context, MainActivity.class));
+                        }*/
+                        startActivity(new Intent(context, MainActivity.class));
                     }
                 } else {
                     Toast.makeText(v.getContext(), getResources().getString(R.string.input_not_all_required_fields), Toast.LENGTH_LONG).show();
@@ -136,16 +138,9 @@ public class AddWalletOperationActivity extends AppCompatActivity implements Dat
 
     private void initFromToWallets() {
         Intent intent = getIntent();
-        Serializable serializableFromIncomeItem = intent.getSerializableExtra("fromIncomeItem");
-        if (serializableFromIncomeItem != null) {
-            fromWallet = (IncomeItem) intent.getSerializableExtra("fromIncomeItem");
-        } else {
-            Serializable serializableFromWallet = intent.getSerializableExtra("fromWallet");
-            if (serializableFromWallet != null) {
-                fromWallet = (Wallet) intent.getSerializableExtra("fromWallet");
-            }
-        }
-        toWallet = (Wallet) intent.getSerializableExtra("toWallet");
+        walletOperation = (WalletOperation) intent.getSerializableExtra("walletOperation");
+        fromWallet = new Wallet(walletOperation.getFromWalletId(), this);
+        toWallet = new Wallet(walletOperation.getToWalletId(), this);
     }
 
     @Override

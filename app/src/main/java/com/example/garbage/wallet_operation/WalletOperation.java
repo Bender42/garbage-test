@@ -12,14 +12,14 @@ import com.example.garbage.database.SQLiteHelper;
 import com.example.garbage.expenditure.Expenditure;
 import com.example.garbage.wallet.Wallet;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Objects;
 
 import static com.example.garbage.tools.GarbageTools.convertAmountToInt;
 import static com.example.garbage.tools.GarbageTools.convertIntToAmount;
 
-public class WalletOperation implements IWalletOperation {
+public class WalletOperation implements IWalletOperation, Serializable {
 
     public static String WALLET_OPERATION_TABLE_NAME = "wallet_operation";
     public static String ID_COLUMN_NAME = "id";

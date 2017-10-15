@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.garbage.wallet_operation.AddWalletOperationActivity">
+    tools:context="com.example.garbage.wallet_operation.EditWalletOperationActivity">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -22,7 +22,7 @@
         android:id="@+id/linearLayout2">
 
         <TextView
-            android:id="@+id/tv_wallet_oper_from_wallet_label"
+            android:id="@+id/tv_edit_wallet_oper_from_wallet_label"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="Из"
@@ -31,12 +31,19 @@
             tools:textAlignment="center" />
 
         <TextView
-            android:id="@+id/tv_wallet_oper_from_wallet_name"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_edit_wallet_oper_from_wallet_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAlignment="textStart"
             android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/ib_edit_wallet_oper_from_wallet_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            app:srcCompat="@drawable/ic_edit_black_24dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -55,7 +62,7 @@
         android:id="@+id/linearLayout4">
 
         <TextView
-            android:id="@+id/tv_wallet_oper_to_wallet_label"
+            android:id="@+id/tv_edit_wallet_oper_to_wallet_label"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="В"
@@ -64,12 +71,19 @@
             tools:textAlignment="center" />
 
         <TextView
-            android:id="@+id/tv_wallet_oper_to_wallet_name"
-            android:layout_width="wrap_content"
+            android:id="@+id/tv_edit_wallet_oper_to_wallet_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAlignment="textStart"
             android:textSize="18sp" />
+
+        <ImageButton
+            android:id="@+id/ib_edit_wallet_oper_to_wallet_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            app:srcCompat="@drawable/ic_edit_black_24dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -88,31 +102,45 @@
         android:id="@+id/linearLayout5">
 
         <TextView
-            android:id="@+id/tv_wallet_oper_time_label"
+            android:id="@+id/tv_edit_wallet_oper_time_label"
             android:layout_width="100dp"
             android:layout_height="match_parent"
-            android:layout_gravity="center_vertical|left"
+            android:layout_gravity="center_vertical|start"
             android:text="Дата"
             android:textSize="18sp"
             tools:textAlignment="center" />
 
         <TextView
-            android:id="@+id/tv_wallet_oper_date"
+            android:id="@+id/tv_edit_wallet_oper_date"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:textAlignment="textStart"
+            android:textAlignment="center"
             android:textSize="18sp"
             tools:text="12.12.2018г." />
 
-        <TextView
-            android:id="@+id/tv_wallet_oper_time"
-            android:layout_width="150dp"
+        <ImageButton
+            android:id="@+id/ib_edit_wallet_oper_date_edit"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.61"
-            android:textAlignment="textStart"
+            android:background="@null"
+            app:srcCompat="@drawable/ic_edit_black_24dp" />
+
+        <TextView
+            android:id="@+id/tv_edit_wallet_oper_time"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:textAlignment="center"
             android:textSize="18sp"
             tools:text="24:59:59" />
+
+        <ImageButton
+            android:id="@+id/ib_edit_wallet_oper_time_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@null"
+            app:srcCompat="@drawable/ic_edit_black_24dp" />
 
     </LinearLayout>
 
@@ -130,8 +158,8 @@
         android:id="@+id/linearLayout7">
 
         <EditText
-            android:id="@+id/et_wallet_oper_name"
-            android:layout_width="wrap_content"
+            android:id="@+id/et_edit_wallet_oper_name"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ems="10"
@@ -156,7 +184,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
 
         <TextView
-            android:id="@+id/tv_wallet_oper_amount_label"
+            android:id="@+id/tv_edit_wallet_oper_amount_label"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:text="Сумма"
@@ -165,28 +193,27 @@
             tools:textAlignment="center" />
 
         <EditText
-            android:id="@+id/et_wallet_oper_amount"
-            android:layout_width="wrap_content"
+            android:id="@+id/et_edit_wallet_oper_amount"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:inputType="numberDecimal"
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/tv_wallet_oper_to_wallet_currency"
+            android:id="@+id/tv_edit_wallet_oper_to_wallet_currency"
             android:layout_width="88dp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>
 
     <Button
-        android:id="@+id/b_add_wallet_oper"
+        android:id="@+id/b_edit_wallet_oper"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
-        android:text="Add"
+        android:text="Update"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout6" />
 

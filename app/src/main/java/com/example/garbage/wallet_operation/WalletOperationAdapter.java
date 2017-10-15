@@ -1,6 +1,7 @@
 package com.example.garbage.wallet_operation;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.ContextMenu;
@@ -19,9 +20,8 @@ import com.example.garbage.wallet.Wallet;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperationAdapter.ViewHolder> {
 
@@ -65,13 +65,14 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
         holder.currency.setTextColor(textColor);
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(select.getTime());
-        SimpleDateFormat formatDate = new SimpleDateFormat("dd.MM.yyyyг. HH:mm");
+        SimpleDateFormat formatDate = new SimpleDateFormat(context.getString(R.string.date_time_label_format), Locale.getDefault());
         holder.time.setText(formatDate.format(calendar.getTime()));
         holder.description.setText(select.getDescription(currentWallet, wallets, expenditures));
         holder.menu.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
             @Override
             public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-                menu.add(0, 1, 0, "Удалить").setOnMenuItemClickListener(getOnMenuItemClickListener(position));
+                menu.add(0, 1, 1, "Редактировать").setOnMenuItemClickListener(getOnMenuItemClickListener(position));
+                menu.add(0, 2, 0, "Удалить").setOnMenuItemClickListener(getOnMenuItemClickListener(position));
             }
         });
     }
@@ -82,8 +83,16 @@ public class WalletOperationAdapter extends RecyclerView.Adapter<WalletOperation
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case 1:
-                        IWalletOperation walletOperation = operations.get(position);
-                        walletOperation.delete(context, wallets);
+                        IWalletOperation editOperation = operations.get(position);
+                        if (editOperation instanceof WalletOperation) {
+                            Intent intent = new Intent(context, EditWalletOperationActivity.class);
+                            intent.putExtra("walletOperation", (WalletOperation) editOperation);
+                            context.startActivity(intent);
+                        }
+                        return true;
+                    case 2:
+                        IWalletOperation deleteOperation = operations.get(position);
+                        deleteOperation.delete(context, wallets);
                         operations.remove(position);
                         notifyItemRemoved(position);
                         notifyItemRangeChanged(position, getItemCount());

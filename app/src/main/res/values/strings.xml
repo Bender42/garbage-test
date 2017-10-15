@@ -51,7 +51,8 @@
     <string name="not_enough_amount_on_wallet">Сумма списания не может быть больше остатка на кошельке</string>
     <string name="input_not_all_required_fields">Заполены не все обязательные поля</string>
     <string name="not_equal_currencies">Валюты кошельков не могут быть разными</string>
-    <string name="date_label_format">dd.MM.yyyyг.</string>
+    <string name="date_time_label_format">dd.MM.yyyy HH:mm</string>
+    <string name="date_label_format">dd.MM.yyyy</string>
     <string name="time_label_format">HH:mm</string>
 
     <string name="tv_income_item_label">Статьи доходов</string>

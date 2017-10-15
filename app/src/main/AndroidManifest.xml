@@ -59,7 +59,8 @@
         <activity android:name=".cost_item.AddCostItemActivity" />
         <activity android:name=".wallet_operation.AddWalletOperationActivity" />
         <activity android:name=".income_item.AddIncomeItemActivity" />
-        <activity android:name=".income_item.EditIncomeItemActivity"></activity>
+        <activity android:name=".income_item.EditIncomeItemActivity" />
+        <activity android:name=".wallet_operation.EditWalletOperationActivity"></activity>
     </application>
 
 </manifest>
