@@ -147,39 +147,31 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        cleanFromTo();
         if (ADD_WALLET_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            cleanFromTo();
             redrawWallets();
         } else if (EDIT_WALLET_ACTIVITY_CODE == requestCode && (RESULT_OK == resultCode || RESULT_CANCELED == resultCode)) {
-            cleanFromTo();
             redrawIncomeItems();
             redrawWallets();
             redrawExpenditures();
         } else if (ADD_EXPENDITURE_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            cleanFromTo();
             redrawExpenditures();
         } else if (EDIT_EXPENDITURE_ACTIVITY_CODE == requestCode && (RESULT_OK == resultCode || RESULT_CANCELED == resultCode)) {
-            cleanFromTo();
             redrawWallets();
             redrawExpenditures();
         } else if (ADD_COST_ITEM_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            cleanFromTo();
             redrawWallets();
             redrawExpenditures();
         } else if (ADD_WALLET_OPERATION_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            cleanFromTo();
             redrawIncomeItems();
             redrawWallets();
         } else if (SQL_ACTIVITY_CODE == requestCode) {
-            cleanFromTo();
             redrawIncomeItems();
             redrawWallets();
             redrawExpenditures();
         } else if (ADD_INCOME_ITEM_ACTIVITY_CODE == requestCode && RESULT_OK == resultCode) {
-            cleanFromTo();
             redrawIncomeItems();
         } else if (EDIT_INCOME_ITEM_ACTIVITY_CODE == requestCode && (RESULT_OK == resultCode || RESULT_CANCELED == resultCode)) {
-            cleanFromTo();
             redrawIncomeItems();
             redrawWallets();
         }
