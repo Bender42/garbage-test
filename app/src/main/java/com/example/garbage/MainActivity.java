@@ -214,8 +214,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         buttonAddWallet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intentPref = new Intent(v.getContext(), AddIncomeItemActivity.class);
-                startActivityForResult(intentPref, ADD_INCOME_ITEM_ACTIVITY_CODE);
+                Intent intent = new Intent(v.getContext(), AddIncomeItemActivity.class);
+                startActivityForResult(intent, ADD_INCOME_ITEM_ACTIVITY_CODE);
             }
         });
     }

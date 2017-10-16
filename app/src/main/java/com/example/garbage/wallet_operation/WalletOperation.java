@@ -164,6 +164,15 @@ public class WalletOperation implements IWalletOperation, Serializable {
         }
     }
 
+    public void update(WalletOperation source) {
+        setId(source.getId());
+        setFromWalletId(source.getFromWalletId());
+        setToWalletId(source.getToWalletId());
+        setAmount(source.getAmount());
+        setName(source.getName());
+        setTime(source.getTime());
+    }
+
     @Override
     public Integer getId() {
         return id;
