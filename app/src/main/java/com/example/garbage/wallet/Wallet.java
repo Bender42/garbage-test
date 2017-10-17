@@ -129,6 +129,15 @@ public class Wallet implements IWallet, Serializable {
         return countUpdate;
     }
 
+    public void updateAmount(Context context, BigDecimal amount) {
+        SQLiteHelper dbHelper = new SQLiteHelper(context);
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(amount));
+        database.update(WALLET_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
+        dbHelper.close();
+    }
+
     public int archive(Context context) {
         SQLiteHelper dbHelper = new SQLiteHelper(context);
         SQLiteDatabase database = dbHelper.getWritableDatabase();

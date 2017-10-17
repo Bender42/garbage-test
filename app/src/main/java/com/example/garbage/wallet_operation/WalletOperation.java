@@ -139,6 +139,67 @@ public class WalletOperation implements IWalletOperation, Serializable {
         }
     }
 
+    public boolean update(Context context, WalletOperation resultWalletOperation, SparseArray<IWallet> wallets) {
+        try {
+            SQLiteHelper dbHelper = new SQLiteHelper(context);
+            SQLiteDatabase database = dbHelper.getWritableDatabase();
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(FROM_WALLET_ID_COLUMN_NAME, resultWalletOperation.getFromWalletId());
+            contentValues.put(TO_WALLET_ID_COLUMN_NAME, resultWalletOperation.getToWalletId());
+            contentValues.put(AMOUNT_COLUMN_NAME, convertAmountToInt(resultWalletOperation.getAmount()));
+            contentValues.put(NAME_COLUMN_NAME, resultWalletOperation.getName());
+            contentValues.put(TIME_COLUMN_NAME, resultWalletOperation.getTime());
+            database.update(
+                    WALLET_OPERATION_TABLE_NAME,
+                    contentValues,
+                    String.format("%s = ?", ID_COLUMN_NAME),
+                    new String[] { String.valueOf(id) });
+
+            if (Objects.equals(fromWalletId, resultWalletOperation.getFromWalletId())) {
+                if (amount.compareTo(resultWalletOperation.getAmount()) != 0) {
+                    IWallet wallet = wallets.get(fromWalletId);
+                    if (!wallet.isIncomeItem()) {
+                        BigDecimal subtractAmount = amount.subtract(resultWalletOperation.getAmount());
+                        BigDecimal fromWalletResultAmount = wallet.getAmount().add(subtractAmount);
+                        ((Wallet) wallet).updateAmount(context, fromWalletResultAmount);
+                    }
+                }
+            } else {
+                IWallet oldWallet = wallets.get(fromWalletId);
+                if (!oldWallet.isIncomeItem()) {
+                    BigDecimal fromOldWalletResultAmount = oldWallet.getAmount().add(amount);
+                    ((Wallet) oldWallet).updateAmount(context, fromOldWalletResultAmount);
+                }
+                Wallet newWallet = (Wallet) wallets.get(resultWalletOperation.getFromWalletId());
+                BigDecimal fromNewWalletResultAmount = newWallet.getAmount().subtract(resultWalletOperation.getAmount());
+                newWallet.updateAmount(context, fromNewWalletResultAmount);
+            }
+
+            if (Objects.equals(toWalletId, resultWalletOperation.getToWalletId())) {
+                if (amount.compareTo(resultWalletOperation.getAmount()) != 0) {
+                    Wallet toWallet = (Wallet) wallets.get(toWalletId);
+                    BigDecimal subtractAmount = amount.subtract(resultWalletOperation.getAmount());
+                    BigDecimal toWalletResultAmount = toWallet.getAmount().subtract(subtractAmount);
+                    toWallet.updateAmount(context, toWalletResultAmount);
+                }
+            } else {
+                Wallet oldToWallet = (Wallet) wallets.get(toWalletId);
+                BigDecimal oldToWalletResultAmount = oldToWallet.getAmount().subtract(amount);
+                oldToWallet.updateAmount(context, oldToWalletResultAmount);
+
+                Wallet newToWallet = (Wallet) wallets.get(resultWalletOperation.getToWalletId());
+                BigDecimal newToWalletResultAmount = newToWallet.getAmount().add(resultWalletOperation.getAmount());
+                newToWallet.updateAmount(context, newToWalletResultAmount);
+            }
+
+            dbHelper.close();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @Override
     public boolean isAddingAmount(IWallet currentWallet) {
         if (currentWallet.isIncomeItem()) {
