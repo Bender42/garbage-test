@@ -144,6 +144,7 @@ public class EditWalletOperationActivity extends AppCompatActivity implements Da
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //TODO добавить активность с выбором статей дохода
                 Intent intent = new Intent(v.getContext(), SelectWalletActivity.class);
                 startActivityForResult(intent, SELECT_FROM_WALLET_ACTIVITY);
             }
